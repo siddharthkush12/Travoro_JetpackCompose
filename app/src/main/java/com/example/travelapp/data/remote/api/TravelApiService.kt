@@ -1,6 +1,7 @@
 package com.example.travelapp.data.remote.api
 
-import com.example.travelapp.data.remote.dto.Suggestion.SuggestionResponse
+import com.example.travelapp.data.remote.dto.others.baseResponse.BaseResponse
+import com.example.travelapp.data.remote.dto.suggestion.SuggestionResponse
 import com.example.travelapp.data.remote.dto.auth.LoginRequest
 import com.example.travelapp.data.remote.dto.auth.LoginResponse
 import com.example.travelapp.data.remote.dto.auth.ResetPasswordRequest
@@ -90,9 +91,7 @@ interface TravelApiService {
     @POST("api/notification/save-token")
     suspend fun saveToken(
         @Body body: Map<String, String>
-    )
-
-
+    ): Response<BaseResponse>
 
 
     //------------------------------Weather Api------------------------
@@ -111,10 +110,14 @@ interface TravelApiService {
     ): Response<CreateTripResponse>
 
 
+
+
     @POST("api/travelAi/generate-plan")
     suspend fun generateAiTrip(
         @Body request: AiTripRequest
     ): Response<AiTripResponse>
+
+
 
 
 
@@ -139,9 +142,6 @@ interface TravelApiService {
 
     @GET("api/travelAi/suggestions/all")
     suspend fun getAllSuggestions(): Response<SuggestionResponse>
-
-
-
 
 
 

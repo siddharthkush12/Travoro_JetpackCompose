@@ -1,4 +1,4 @@
-package com.example.travelapp.data.remote.dto.Suggestion
+package com.example.travelapp.data.remote.dto.suggestion
 
 
 import kotlinx.serialization.SerialName

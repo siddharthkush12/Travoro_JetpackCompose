@@ -1,4 +1,4 @@
-package com.example.travelapp.navigation
+package com.example.travelapp.rootNavigation
 
 import kotlinx.serialization.Serializable
 

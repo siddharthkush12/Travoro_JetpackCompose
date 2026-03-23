@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.NotificationImportant
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,14 +29,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import coil.request.CachePolicy
-import coil.request.ImageRequest
 import com.example.travelapp.data.remote.dto.message.Message
 import com.example.travelapp.di.Session
+import com.example.travelapp.ui.components.CustomTopBar
+import com.example.travelapp.ui.components.formatTimeAgo
 import com.example.travelapp.ui.theme.TealCyan
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
+
 
 @Composable
 fun MessageScreen(
@@ -66,56 +65,17 @@ fun MessageScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF7F7F7))
+            .background(Color.White)
     ) {
 
-        /* ---------------- TOP BAR ---------------- */
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            TealCyan,
-                            TealCyan.copy(alpha = 0.7f)
-                        )
-                    )
-                )
-                .padding(top = 40.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
-        ) {
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.clickable(onClick = onClickBack)
-                )
-
-                Spacer(modifier = Modifier.width(22.dp))
-
-                Column {
-
-                    Text(
-                        text = "Trip Group Chat",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-
-                    Text(
-                        text = "${messages.size} messages",
-                        fontSize = 12.sp,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
-
-                }
-            }
-        }
+        CustomTopBar(
+            modifier = Modifier.fillMaxWidth(),
+            title = "Messages",
+            icon = Icons.Filled.NotificationImportant,
+            onBackClick = onClickBack
+        )
 
         /* ---------------- MESSAGES ---------------- */
 
@@ -299,7 +259,7 @@ fun MessageBubble(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = formatTime(message.createdAt),
+                        text = formatTimeAgo(message.createdAt),
                         fontSize = 10.sp,
                         color =
                             if (isMine) Color.White.copy(alpha = 0.7f)
@@ -327,28 +287,3 @@ fun MessageBubble(
 }
 
 
-fun formatTime(time: String): String {
-
-    return try {
-
-        val inputFormat = SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            Locale.getDefault()
-        )
-
-        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
-
-        val date = inputFormat.parse(time)
-
-        val outputFormat = SimpleDateFormat(
-            "hh:mm a",
-            Locale.getDefault()
-        )
-
-        outputFormat.format(date!!)
-
-    } catch (e: Exception) {
-        ""
-    }
-
-}

@@ -49,7 +49,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.travelapp.data.remote.dto.trips.Profile
-import com.example.travelapp.ui.components.BackButton
+import com.example.travelapp.ui.components.BackRoundButton
 import com.example.travelapp.ui.theme.TealCyan
 
 @Composable
@@ -87,7 +87,7 @@ fun CreateTripScreen(
                 horizontalArrangement = Arrangement.spacedBy(28.dp)
             ) {
 
-                BackButton(
+                BackRoundButton (
                     onClick = { onNavigateBack() }
                 )
 

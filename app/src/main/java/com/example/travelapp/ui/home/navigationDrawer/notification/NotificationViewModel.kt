@@ -1,13 +1,11 @@
-package com.example.travelapp.ui.home.navigationDrawer.Notification
+package com.example.travelapp.ui.home.navigationDrawer.notification
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.travelapp.core.network.ApiResult
 import com.example.travelapp.core.network.safeApiCall
 import com.example.travelapp.data.remote.api.TravelApiService
-import com.example.travelapp.data.remote.dto.Suggestion.Data
-import com.example.travelapp.ui.utils.NotificationHelper
+import com.example.travelapp.data.remote.dto.suggestion.Data
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

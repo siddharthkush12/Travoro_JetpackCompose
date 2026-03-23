@@ -1,74 +1,47 @@
 package com.example.travelapp.ui.home.profile
 
-
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.VerifiedUser
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.example.travelapp.R
-import com.example.travelapp.ui.components.BackButton
 import com.example.travelapp.ui.components.CustomDatePickerField
+import com.example.travelapp.ui.components.CustomDropdownField
 import com.example.travelapp.ui.components.CustomEditText
 import com.example.travelapp.ui.components.CustomTopBar
-import com.example.travelapp.ui.components.GenderDropdown
 import com.example.travelapp.ui.theme.TealCyan
 import com.example.travelapp.ui.utils.uriToMultipart
 
-
 @Composable
 fun ProfileTabScreen(
-    viewModel: ProfileViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit
+    viewModel: ProfileViewModel = hiltViewModel(), onNavigateBack: () -> Unit
 ) {
-
     val profile by viewModel.profile.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -110,101 +83,81 @@ fun ProfileTabScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F7FA))
+            .background(MaterialTheme.colorScheme.background)
     ) {
-
         CustomTopBar(
-            title = "Profile",
-            onBackClick = onNavigateBack
+            title = "USER IDENTITY", icon = Icons.Rounded.VerifiedUser, onBackClick = onNavigateBack
         )
 
         if (uiState is ProfileViewModel.ProfileEvent.Loading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = TealCyan)
+                CircularProgressIndicator(color = TealCyan, strokeWidth = 2.dp)
             }
             return
         }
 
         profile?.let {
-
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(18.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-
+                Spacer(modifier = Modifier.height(8.dp))
 
                 ProfileImageCard(
                     profilePic = selectedImageUri ?: profilePic,
-                    onImageClick = { launcher.launch("image/*") }
-                )
+                    onImageClick = { launcher.launch("image/*") })
 
-
-                SectionCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    "General Information"
-                ) {
+                SectionCard(title = "CORE IDENTITY") {
                     GeneralDetails(
-                        fullname, dob, gender,
+                        fullname,
+                        dob,
+                        gender,
                         { fullname = it },
                         { dob = it },
-                        { gender = it }
-                    )
+                        { gender = it })
                 }
 
-
-                SectionCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    "Contact"
-                ) {
-                    ContactDetails(
-                        phone, email,
-                        { phone = it }
-                    )
+                SectionCard(title = "COMMUNICATION") {
+                    ContactDetails(phone, email, { phone = it })
                 }
 
-
-                SectionCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    "Address"
-                ) {
+                SectionCard(title = "LOCATION") {
                     AddressDetails(
-                        city, state, country,
+                        city,
+                        state,
+                        country,
                         { city = it },
                         { state = it },
-                        { country = it }
-                    )
+                        { country = it })
                 }
+
+                Spacer(modifier = Modifier.height(12.dp))
 
 
                 Button(
                     onClick = {
-                        val imagePart = selectedImageUri?.let {
-                            uriToMultipart(context, it)
-                        }
-
+                        val imagePart = selectedImageUri?.let { uriToMultipart(context, it) }
                         viewModel.updateProfile(
-                            imagePart,
-                            fullname,
-                            dob,
-                            gender,
-                            phone,
-                            city,
-                            state,
-                            country
+                            imagePart, fullname, dob, gender, phone, city, state, country
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(55.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(TealCyan)
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
                 ) {
-                    Text("Save Changes", fontSize = 16.sp)
+                    Text(
+                        "UPDATE IDENTITY DATA",
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
@@ -214,32 +167,175 @@ fun ProfileTabScreen(
 @Composable
 fun SectionCard(
     modifier: Modifier = Modifier,
-    title: String?,
+    title: String,
     content: @Composable () -> Unit
 ) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(18.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(Color.White)
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.4f),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)),
     ) {
-
         Column(
-            modifier = Modifier.padding(15.dp)
+            modifier = Modifier.padding(20.dp)
         ) {
-            title?.let {
-                Text(
-                    text = title,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold
+            Text(
+                text = title, style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.Black, letterSpacing = 2.sp, color = TealCyan
                 )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
+            )
+            Spacer(modifier = Modifier.height(20.dp))
             content()
         }
     }
 }
 
+@Composable
+fun ProfileImageCard(
+    profilePic: Any?,
+    onImageClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+    ) {
+        Box {
+            // Neon Sweep Profile Ring
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 2.dp,
+                        brush = Brush.sweepGradient(listOf(TealCyan, Color(0xFF00D9F5), TealCyan)),
+                        shape = CircleShape
+                    )
+                    .padding(6.dp)
+            ) {
+                AsyncImage(
+                    model = profilePic,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            // Glassmorphic Edit Icon
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = (-4).dp, y = (-4).dp)
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface) // Solid background to cut out the image
+                    .border(1.dp, Color.White.copy(alpha = 0.1f), CircleShape)
+                    .padding(2.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .background(TealCyan)
+                        .clickable { onImageClick() }, contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.CameraAlt,
+                        contentDescription = "Edit Profile",
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ContactDetails(
+    phone: String,
+    email: String,
+    onPhoneChange: (String) -> Unit,
+) {
+    val dynamicColor = MaterialTheme.colorScheme.onSurface
+
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        CustomEditText(
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Encrypted Phone") },
+            value = phone,
+            onValueChange = onPhoneChange
+        )
+
+        Column {
+            OutlinedTextField(
+                value = email,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("System Email (Locked)", fontSize = 14.sp) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                trailingIcon = {
+                    Icon(
+                        Icons.Default.Lock,
+                        contentDescription = null,
+                        tint = dynamicColor.copy(alpha = 0.3f),
+                        modifier = Modifier.size(18.dp)
+                    )
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = dynamicColor.copy(alpha = 0.1f),
+                    unfocusedBorderColor = dynamicColor.copy(alpha = 0.1f),
+                    focusedLabelColor = dynamicColor.copy(alpha = 0.4f),
+                    unfocusedLabelColor = dynamicColor.copy(alpha = 0.4f),
+                    focusedContainerColor = dynamicColor.copy(alpha = 0.02f),
+                    unfocusedContainerColor = dynamicColor.copy(alpha = 0.02f),
+                    focusedTextColor = dynamicColor.copy(alpha = 0.5f),
+                    unfocusedTextColor = dynamicColor.copy(alpha = 0.5f)
+                )
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                "Primary email is permanently bound to the Core System.",
+                fontSize = 11.sp,
+                color = dynamicColor.copy(alpha = 0.5f),
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun GeneralDetails(
+    fullname: String,
+    dob: String,
+    gender: String,
+    onFullNameChange: (String) -> Unit,
+    onDOBChange: (String) -> Unit,
+    onGenderChange: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        CustomEditText(
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Designation (Full Name)") },
+            value = fullname,
+            onValueChange = onFullNameChange
+        )
+
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            CustomDatePickerField(
+                modifier = Modifier.weight(1.5f), selectedDate = dob, onDateSelected = onDOBChange
+            )
+            CustomDropdownField(
+                modifier = Modifier.weight(1f),
+                selectedValue = gender,
+                options = listOf("Male", "Female", "Other"),
+                label = "Identity",
+                onValueChange = onGenderChange
+            )
+        }
+    }
+}
 
 @Composable
 fun AddressDetails(
@@ -251,140 +347,65 @@ fun AddressDetails(
     onCountryChange: (String) -> Unit
 ) {
 
-    Column {
-
+    val indianStatesAndUTs = listOf(
+        "Andaman and Nicobar Islands",
+        "Andhra Pradesh",
+        "Arunachal Pradesh",
+        "Assam",
+        "Bihar",
+        "Chandigarh",
+        "Chhattisgarh",
+        "Dadra and Nagar Haveli and Daman and Diu",
+        "Delhi",
+        "Goa",
+        "Gujarat",
+        "Haryana",
+        "Himachal Pradesh",
+        "Jammu and Kashmir",
+        "Jharkhand",
+        "Karnataka",
+        "Kerala",
+        "Ladakh",
+        "Lakshadweep",
+        "Madhya Pradesh",
+        "Maharashtra",
+        "Manipur",
+        "Meghalaya",
+        "Mizoram",
+        "Nagaland",
+        "Odisha",
+        "Puducherry",
+        "Punjab",
+        "Rajasthan",
+        "Sikkim",
+        "Tamil Nadu",
+        "Telangana",
+        "Tripura",
+        "Uttar Pradesh",
+        "Uttarakhand",
+        "West Bengal"
+    )
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            CustomEditText(
+                modifier = Modifier.weight(1f),
+                label = { Text("City") },
+                value = city,
+                onValueChange = onCityChange
+            )
+            CustomDropdownField(
+                modifier = Modifier.weight(1f),
+                selectedValue = state,
+                options = indianStatesAndUTs,
+                label = "State/Province",
+                onValueChange = onStateChange
+            )
+        }
         CustomEditText(
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("City") },
-            value = city,
-            onValueChange = onCityChange
-        )
-
-        CustomEditText(
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("State") },
-            value = state,
-            onValueChange = onStateChange
-        )
-
-        CustomEditText(
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Country") },
+            label = { Text("Global Region (Country)") },
             value = country,
             onValueChange = onCountryChange
         )
-    }
-}
-
-@Composable
-fun ContactDetails(
-    phone: String,
-    email: String,
-    onPhoneChange: (String) -> Unit,
-) {
-
-    Column {
-
-        CustomEditText(
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Phone Number") },
-            value = phone,
-            onValueChange = onPhoneChange
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = {},
-            readOnly = true,
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Text(
-            "Email cannot be changed",
-            fontSize = 11.sp,
-            color = Color.Gray
-        )
-    }
-}
-
-
-@Composable
-fun GeneralDetails(
-    fullname: String,
-    dob: String,
-    gender: String,
-    onFullNameChange: (String) -> Unit,
-    onDOBChange: (String) -> Unit,
-    onGenderChange: (String) -> Unit
-) {
-
-    Column {
-        CustomEditText(
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Full Name") },
-            value = fullname,
-            onValueChange = onFullNameChange
-        )
-
-        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-
-            CustomDatePickerField(
-                modifier = Modifier.weight(1.5f),
-                selectedDate = dob,
-                onDateSelected = onDOBChange
-            )
-
-            GenderDropdown(
-                modifier = Modifier.weight(1f),
-                selectedGender = gender,
-                onGenderChange = onGenderChange
-            )
-        }
-    }
-}
-
-@Composable
-fun ProfileImageCard(
-    profilePic: Any?,
-    onImageClick: () -> Unit
-) {
-
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-
-        Box {
-
-            AsyncImage(
-                model = profilePic,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(130.dp)
-                    .clip(CircleShape)
-                    .background(Color.White)
-                    .border(3.dp, TealCyan, CircleShape),
-                contentScale = ContentScale.Crop
-            )
-
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(TealCyan)
-                    .clickable { onImageClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.camera_svgrepo_com),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-        }
     }
 }

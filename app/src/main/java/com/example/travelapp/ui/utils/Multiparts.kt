@@ -36,7 +36,7 @@ fun uriToMultipart(
     FileOutputStream(file).use { output ->
         resizedBitmap.compress(
             Bitmap.CompressFormat.JPEG,
-            70,
+            80,
             output
         )
     }

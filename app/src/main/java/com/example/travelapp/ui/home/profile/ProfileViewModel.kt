@@ -31,6 +31,10 @@ class ProfileViewModel @Inject constructor(val travelApiService: TravelApiServic
     private val _navigationEvent = MutableSharedFlow<ProfileNavigation>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
+    init {
+        fetchProfile()
+    }
+
 
     fun fetchProfile() {
         viewModelScope.launch {

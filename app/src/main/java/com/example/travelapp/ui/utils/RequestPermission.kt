@@ -1,7 +1,6 @@
 package com.example.travelapp.ui.utils
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -11,68 +10,55 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 
-
 @Composable
 fun RequestLocationPermission(
     onLocPermissionGranted: () -> Unit,
     onLocPermissionDenied: () -> Unit
-){
-    val context= LocalContext.current
-    val sharedPref=context.getSharedPreferences("app_prefs",Context.MODE_PRIVATE)
-    val alreadyAsked=sharedPref.getBoolean("location_permission_already_asked",false)
+) {
+    val context = LocalContext.current
 
-
-    val permissionLauncher=rememberLauncherForActivityResult(
+    val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
-    ){isGranted->
-        sharedPref.edit().putBoolean("location_permission_already_asked",true).apply()
-        if(isGranted){
+    ) { isGranted ->
+        if (isGranted) {
             onLocPermissionGranted()
-        }
-        else{
+        } else {
             onLocPermissionDenied()
         }
     }
 
     LaunchedEffect(Unit) {
-        val permissionGranted= ContextCompat.checkSelfPermission(
-            context,Manifest.permission.ACCESS_FINE_LOCATION
-        )==android.content.pm.PackageManager.PERMISSION_GRANTED
+        val permissionGranted = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
-        when{
-            permissionGranted->{
-                onLocPermissionGranted()
-            }
-            !alreadyAsked->{
-                permissionLauncher.launch(
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            }
-            else->{
-                onLocPermissionDenied()
-            }
+        if (permissionGranted) {
+            onLocPermissionGranted()
+        } else {
+            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 }
-
 
 @Composable
 fun RequestNotificationPermission(
     onNotificationPermissionGranted: () -> Unit,
     onNotificationPermissionDenied: () -> Unit
 ) {
-
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted) onNotificationPermissionGranted()
-        else onNotificationPermissionDenied()
+        if (isGranted) {
+            onNotificationPermissionGranted()
+        } else {
+            onNotificationPermissionDenied()
+        }
     }
 
     LaunchedEffect(Unit) {
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             onNotificationPermissionGranted()
             return@LaunchedEffect

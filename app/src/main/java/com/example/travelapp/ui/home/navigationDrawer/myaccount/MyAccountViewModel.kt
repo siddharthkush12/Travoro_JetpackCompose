@@ -2,11 +2,7 @@ package com.example.travelapp.ui.home.navigationDrawer.myaccount
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.travelapp.core.network.ApiResult
-import com.example.travelapp.core.network.safeApiCall
 import com.example.travelapp.data.remote.api.TravelApiService
-import com.example.travelapp.data.remote.dto.auth.ResetPasswordRequest
-import com.example.travelapp.ui.auth.login.LoginViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

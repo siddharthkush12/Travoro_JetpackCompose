@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.foundation)
     implementation(libs.firebase.messaging)
+    implementation(libs.ui.graphics)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

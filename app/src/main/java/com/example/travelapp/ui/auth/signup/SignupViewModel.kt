@@ -1,8 +1,10 @@
 package com.example.travelapp.ui.auth.signup
 
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.travelapp.AppInitializer
 import com.example.travelapp.core.network.ApiResult
 import com.example.travelapp.core.network.safeApiCall
 import com.example.travelapp.data.remote.api.TravelApiService
@@ -18,7 +20,11 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class SignupViewModel @Inject constructor(val travelApiService: TravelApiService, val session: Session) : ViewModel() {
+class SignupViewModel @Inject constructor(
+    val travelApiService: TravelApiService,
+    val session: Session,
+    val appInitializer: AppInitializer
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SignUpEvent>(SignUpEvent.Nothing)
     val uiState = _uiState.asStateFlow()
@@ -37,7 +43,6 @@ class SignupViewModel @Inject constructor(val travelApiService: TravelApiService
     val password = _password.asStateFlow()
 
 
-
     fun onNameChange(fullName: String) {
         _fullName.value = fullName
     }
@@ -53,10 +58,10 @@ class SignupViewModel @Inject constructor(val travelApiService: TravelApiService
 
 
     fun onSignUpButtonClick() {
-        viewModelScope.launch{
+        viewModelScope.launch {
             _uiState.emit(SignUpEvent.Loading)
 
-            val response= safeApiCall {
+            val response = safeApiCall {
                 travelApiService.signup(
                     SignupRequest(
                         name = _fullName.value,
@@ -65,13 +70,15 @@ class SignupViewModel @Inject constructor(val travelApiService: TravelApiService
                     )
                 )
             }
-            when(response){
+            when (response) {
                 is ApiResult.Success -> {
-                    _uiState.value=SignUpEvent.Success
+                    _uiState.value = SignUpEvent.Success
                     session.storeToken(response.data.data.token)
                     session.storeUserId(response.data.data.user.id)
+                    appInitializer.initializeApp(viewModelScope)
                     _navigationEvent.emit(SignUpNavigation.NavigationToHome)
                 }
+
                 is ApiResult.Error -> {
                     _uiState.emit(
                         SignUpEvent.Error(
@@ -79,6 +86,7 @@ class SignupViewModel @Inject constructor(val travelApiService: TravelApiService
                         )
                     )
                 }
+
                 is ApiResult.Exception -> {
                     _uiState.emit(
                         SignUpEvent.Error(
@@ -91,28 +99,22 @@ class SignupViewModel @Inject constructor(val travelApiService: TravelApiService
 
     }
 
-    fun onAlreadyHaveAccountButtonClick() {
-        viewModelScope.launch {
-            _navigationEvent.emit(SignUpNavigation.NavigationToLogin)
-        }
-    }
 
     fun onClearError() {
         viewModelScope.launch {
-            _uiState.value=SignUpEvent.Nothing
+            _uiState.value = SignUpEvent.Nothing
         }
     }
 
 
     sealed class SignUpNavigation {
         object NavigationToHome : SignUpNavigation()
-        object NavigationToLogin : SignUpNavigation()
     }
 
     sealed class SignUpEvent {
         object Nothing : SignUpEvent()
         object Success : SignUpEvent()
-        data class Error(val message:String) : SignUpEvent()
+        data class Error(val message: String) : SignUpEvent()
         object Loading : SignUpEvent()
     }
 

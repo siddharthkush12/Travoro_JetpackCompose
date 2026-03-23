@@ -2,267 +2,236 @@ package com.example.travelapp.ui.auth.login
 
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.*
 import com.example.travelapp.R
-import com.example.travelapp.navigation.Home
-import com.example.travelapp.navigation.Login
-import com.example.travelapp.navigation.SignUp
-import com.example.travelapp.ui.auth.forgetPassword.ForgetPasswordSheet
+import com.example.travelapp.rootNavigation.Home
+import com.example.travelapp.rootNavigation.Login
+import com.example.travelapp.rootNavigation.SignUp
+import com.example.travelapp.ui.components.AnimatedTravoroTitle
 import com.example.travelapp.ui.components.AuthInputText
 import com.example.travelapp.ui.components.ErrorAlertDialog
-import com.example.travelapp.ui.components.SocialMediaButton
+import com.example.travelapp.ui.components.ForgetPasswordSheet
+import com.example.travelapp.ui.theme.MidnightBlue
 import com.example.travelapp.ui.theme.TealCyan
 import kotlinx.coroutines.flow.collectLatest
 
-
 @Composable
-fun LoginScreen(navController: NavController, viewModel: LoginViewModel= hiltViewModel()) {
+fun LoginScreen(
+    rootNavController: NavController, viewModel: LoginViewModel = hiltViewModel()
+) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val email=viewModel.email.collectAsStateWithLifecycle()
-    val password=viewModel.password.collectAsStateWithLifecycle()
-
+    val email by viewModel.email.collectAsStateWithLifecycle()
+    val password by viewModel.password.collectAsStateWithLifecycle()
     var showForgetSheet by remember { mutableStateOf(false) }
 
-
-
-    when(uiState){
-        is LoginViewModel.LoginEvent.Error -> {
-            ErrorAlertDialog(
-                message = (uiState as LoginViewModel.LoginEvent.Error).message,
-                onDismiss = {
-                    viewModel.clearError()
-                }
-            )
-        }
-        else -> Unit
-    }
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.train))
 
 
     LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collectLatest {event->
-            when(event){
+        viewModel.navigationEvent.collectLatest { event ->
+            when (event) {
                 is LoginViewModel.LoginNavigation.NavigationToHome -> {
-                    navController.navigate(Home){
-                        popUpTo(Login){
-                            inclusive=true
-                        }
-                    }
-                }
-                is LoginViewModel.LoginNavigation.NavigationToSignUp -> {
-                    navController.navigate(SignUp)
+                    rootNavController.navigate(Home) { popUpTo(Login) { inclusive = true } }
                 }
             }
         }
     }
 
+    if (uiState is LoginViewModel.LoginEvent.Error) {
+        ErrorAlertDialog(
+            message = (uiState as LoginViewModel.LoginEvent.Error).message,
+            onDismiss = { viewModel.clearError() })
+    }
 
+//  ------------------------------------------UI----------------------------------------------------
 
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.signin)
-    )
-
-    val gradient = Brush.verticalGradient(
-        colors = listOf(
-            TealCyan.copy(0.3f), Color.White, TealCyan.copy(0.2f)
-        )
-    )
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(gradient),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(MidnightBlue)
     ) {
 
         LottieAnimation(
             composition = composition,
             iterations = LottieConstants.IterateForever,
-            modifier = Modifier.height(200.dp),
-
-            )
-
-        Spacer(modifier = Modifier.size(10.dp))
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.TopCenter),
+            contentScale = ContentScale.Crop
+        )
 
         Box(
-            modifier = Modifier.shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(50.dp),
-                ambientColor = TealCyan.copy(alpha = 0.3f),
-                spotColor = TealCyan.copy(alpha = 0.5f)
-            )
-        ) {
-            Card(
-                modifier = Modifier.size(330.dp, 500.dp),
-                shape = RoundedCornerShape(50.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White.copy(alpha = 0.7f)
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        0f to Color.Transparent,
+                        1f to MidnightBlue,
+                    )
                 )
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
+        ) {
+
+            Spacer(modifier = Modifier.height(60.dp))
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy((-35).dp)
             ) {
-                Column(
+                Text(
+                    text = "Unfold Your World",
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontSize = 34.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(R.font.inknutantiquamedium))
+
+                )
+
+                AnimatedTravoroTitle()
+            }
+
+            Text(
+                text = "Your digital passport to hidden gems, seamless planning, and the stories that define a lifetime.",
+                color = Color.White.copy(alpha = 0.7f),
+                fontSize = 16.sp,
+                lineHeight = 24.sp
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(40.dp))
+
+
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AuthInputText(
+                    value = email,
+                    onValueChange = viewModel::onEmailChange,
+                    placeholder = "Email Address",
+                    label = "Where should we reach you?",
+                    keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                AuthInputText(
+                    value = password,
+                    onValueChange = viewModel::onPasswordChange,
+                    placeholder = "Your Secret Key",
+                    label = "Password",
+                    keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp, 5.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(
+                        onClick = {
+                            showForgetSheet = true
+                        }
+                    ) {
+                        Text(
+                            text = "Lost your way?",
+                            color = TealCyan,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = viewModel::onLoginButtonClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
+                ) {
+                    if (uiState is LoginViewModel.LoginEvent.Loading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            strokeWidth = 3.dp,
+                            modifier = Modifier.size(
+                                24.dp
+                            )
+                        )
+                    } else {
+                        Text(
+                            text = "Begin the Adventure",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Login",
-                        fontSize = 30.sp,
-                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                        fontWeight = FontWeight.ExtraLight,
-                        color = TealCyan,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        text = "Not a member of the travoro?",
+                        color = Color.White.copy(alpha = 0.6f)
                     )
-
-                    Spacer(modifier = Modifier.size(40.dp))
-
-                    AuthInputText(
-                        value = email.value,
-                        onValueChange = {viewModel.onEmailChange(it)},
-                        placeholder = "Email",
-                        label = "Email",
-                        keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        modifier = Modifier
-                    )
-                    Spacer(modifier = Modifier.size(12.dp))
-                    AuthInputText(
-                        value = password.value,
-                        onValueChange = {viewModel.onPasswordChange(it)},
-                        placeholder = "Password",
-                        label = "Password",
-                        keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        modifier = Modifier
-                    )
-
                     TextButton(
                         onClick = {
-                            showForgetSheet=true
-                        },
+                            rootNavController.navigate(SignUp)
+                        }
                     ) {
                         Text(
-                            text = "Forget Password ?",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.End,
-                            color = TealCyan
+                            text = "Join us",
+                            color = TealCyan,
+                            fontWeight = FontWeight.Bold
                         )
                     }
-
-                    Button(
-                        onClick = {
-                            viewModel.onLoginButtonClick()
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(TealCyan),
-                        enabled = uiState !is LoginViewModel.LoginEvent.Loading
-                    ) {
-                        if (uiState is LoginViewModel.LoginEvent.Loading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                color = Color.White,
-                                strokeWidth = 2.dp
-                            )
-                        }
-                        else {
-                            Text(
-                                text = "Login",
-                                fontSize = 20.sp,
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-
-                    TextButton(
-                        onClick = {
-                            viewModel.onDontHaveAccountButtonClick()
-                        },
-                    ) {
-                        Text(
-                            text = "Don't have an account? Sign Up",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            color = TealCyan
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.size(30.dp))
-
-                    Text(
-                        text = "or via social media",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        color = Color.Gray
-                    )
-
-                    Spacer(modifier = Modifier.size(10.dp))
-
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        SocialMediaButton(text = "Facebook", icon = R.drawable.ic_fb_icon,Modifier.weight(1f))
-                        Spacer(modifier = Modifier.size(10.dp))
-                        SocialMediaButton(text = "Google", icon = R.drawable.ic_google_icon,Modifier.weight(1f))
-
-                    }
-
                 }
             }
         }
     }
-    if(showForgetSheet){
+
+
+    if (showForgetSheet) {
         ForgetPasswordSheet(
-            viewModel=viewModel,
-            onDismiss={
+            viewModel = viewModel, onDismiss = {
                 viewModel.clearForgetPasswordState()
-                showForgetSheet=false
+                showForgetSheet = false
             }
         )
     }

@@ -71,5 +71,4 @@ object NetworkModule {
         return retrofit.create(TravelApiService::class.java)
     }
 
-
 }

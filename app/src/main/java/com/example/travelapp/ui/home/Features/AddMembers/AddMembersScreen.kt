@@ -41,7 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.travelapp.ui.home.navigation.ChatGroupTab
+import com.example.travelapp.ui.home.homeNavigation.ChatGroupTab
 import com.example.travelapp.ui.theme.TealCyan
 
 

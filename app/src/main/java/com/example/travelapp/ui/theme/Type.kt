@@ -17,14 +17,84 @@ val poppinsFontFamily = FontFamily(
     Font(R.font.poppins_black, FontWeight.Black),
     Font(R.font.poppins_thin, FontWeight.Thin),
     Font(R.font.poppins_light, FontWeight.Light),
-    Font(R.font.poppins_extralight, FontWeight.ExtraLight),
-    Font(R.font.poppins_blackitalic, FontWeight.Black),
-    Font(R.font.poppins_bolditalic, FontWeight.Bold),
+    Font(R.font.poppins_extralight, FontWeight.ExtraLight)
+    // Note: Italic fonts are usually placed in their own FontFamily or
+    // defined with FontStyle.Italic within the same FontFamily if needed.
 )
 
-
-// Set of Material typography styles to start with
+// The Complete Travoro Typography Scale
 val Typography = Typography(
+
+    // --- DISPLAY: For massive hero text (Splash screens, Onboarding headers) ---
+    displayLarge = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 57.sp,
+        lineHeight = 64.sp,
+        letterSpacing = (-0.25).sp // Tighter spacing for massive text looks sleeker
+    ),
+    displayMedium = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 45.sp,
+        lineHeight = 52.sp,
+        letterSpacing = 0.sp
+    ),
+    displaySmall = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 36.sp,
+        lineHeight = 44.sp,
+        letterSpacing = 0.sp
+    ),
+
+    // --- HEADLINE: For main screen titles ("Explore", "My Trips") ---
+    headlineLarge = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 32.sp,
+        lineHeight = 40.sp,
+        letterSpacing = 0.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 28.sp,
+        lineHeight = 36.sp,
+        letterSpacing = 0.sp
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.sp
+    ),
+
+    // --- TITLE: For cards, dialogs, and list item headers ("Paris, France") ---
+    titleLarge = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.15.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
+    ),
+
+    // --- BODY: For paragraphs, descriptions, and standard reading text ---
     bodyLarge = TextStyle(
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.Normal,
@@ -32,28 +102,41 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
-    bodySmall = TextStyle(
+    bodyMedium = TextStyle(
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),
-
-    titleLarge = TextStyle(
+    bodySmall = TextStyle(
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.4.sp
     ),
 
+    // --- LABEL: For buttons, tags, and tiny overline text (Needs to be highly readable) ---
+    labelLarge = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.SemiBold, // Bolder so buttons pop
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    ),
     labelSmall = TextStyle(
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
-    ),
-
     )
+)

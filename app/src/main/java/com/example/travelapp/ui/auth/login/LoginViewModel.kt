@@ -3,6 +3,7 @@ package com.example.travelapp.ui.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.travelapp.AppInitializer
 import com.example.travelapp.core.network.ApiResult
 import com.example.travelapp.core.network.safeApiCall
 import com.example.travelapp.data.remote.api.TravelApiService
@@ -19,7 +20,11 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(val travelApiService: TravelApiService, val session: Session) : ViewModel() {
+class LoginViewModel @Inject constructor(
+    val travelApiService: TravelApiService,
+    val session: Session,
+    val appInitializer: AppInitializer
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LoginEvent>(LoginEvent.Nothing)
     val uiState = _uiState.asStateFlow()
@@ -27,7 +32,8 @@ class LoginViewModel @Inject constructor(val travelApiService: TravelApiService,
     private val _navigationEvent = MutableSharedFlow<LoginNavigation>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
-    private val _forgotPasswordState = MutableStateFlow<ForgotPasswordState>(ForgotPasswordState.Idle)
+    private val _forgotPasswordState =
+        MutableStateFlow<ForgotPasswordState>(ForgotPasswordState.Idle)
     val forgotState = _forgotPasswordState.asStateFlow()
 
 
@@ -37,6 +43,8 @@ class LoginViewModel @Inject constructor(val travelApiService: TravelApiService,
     private val _password = MutableStateFlow("")
     val password = _password.asStateFlow()
 
+    private val _forgetEmail = MutableStateFlow("")
+    val forgetEmail = _forgetEmail.asStateFlow()
 
     fun onEmailChange(email: String) {
         _email.value = email
@@ -44,6 +52,10 @@ class LoginViewModel @Inject constructor(val travelApiService: TravelApiService,
 
     fun onPasswordChange(password: String) {
         _password.value = password
+    }
+
+    fun onForgetEmailChange(email: String) {
+        _forgetEmail.value = email
     }
 
 
@@ -63,6 +75,7 @@ class LoginViewModel @Inject constructor(val travelApiService: TravelApiService,
                     _uiState.value = LoginEvent.Success
                     session.storeToken(response.data.data.token)
                     session.storeUserId(response.data.data.user.id)
+                    appInitializer.initializeApp(viewModelScope)
                     _navigationEvent.emit(LoginNavigation.NavigationToHome)
                 }
 
@@ -87,23 +100,18 @@ class LoginViewModel @Inject constructor(val travelApiService: TravelApiService,
 
     }
 
-    fun onDontHaveAccountButtonClick() {
-        viewModelScope.launch {
-            _navigationEvent.emit(LoginNavigation.NavigationToSignUp)
-        }
-    }
 
-    fun onForgetPasswordButtonClick(email:String) {
-        if(email.isBlank()){
-            _forgotPasswordState.value=ForgotPasswordState.Error("⚠\uFE0F Please enter a new password")
+    fun onForgetPasswordButtonClick() {
+        if (_forgetEmail.value.isBlank()) {
+            _forgotPasswordState.value = ForgotPasswordState.Error("Please enter registered email")
             return
         }
         viewModelScope.launch {
-            _forgotPasswordState.value=ForgotPasswordState.Loading
+            _forgotPasswordState.value = ForgotPasswordState.Loading
             val response = safeApiCall {
                 travelApiService.resetPassword(
                     ResetPasswordRequest(
-                        email = email
+                        email = _forgetEmail.value
                     )
                 )
             }
@@ -112,10 +120,12 @@ class LoginViewModel @Inject constructor(val travelApiService: TravelApiService,
                     _forgotPasswordState.value =
                         ForgotPasswordState.Success("Password reset link sent to your email")
                 }
+
                 is ApiResult.Error -> {
                     _forgotPasswordState.value =
                         ForgotPasswordState.Error(response.message)
                 }
+
                 else -> {
                     _forgotPasswordState.value =
                         ForgotPasswordState.Error("Something went wrong")
@@ -125,18 +135,17 @@ class LoginViewModel @Inject constructor(val travelApiService: TravelApiService,
     }
 
 
-    fun clearError(){
-        _uiState.value=LoginEvent.Nothing
+    fun clearError() {
+        _uiState.value = LoginEvent.Nothing
     }
 
-    fun clearForgetPasswordState(){
-        _forgotPasswordState.value=ForgotPasswordState.Idle
+    fun clearForgetPasswordState() {
+        _forgotPasswordState.value = ForgotPasswordState.Idle
     }
 
 
     sealed class LoginNavigation {
         object NavigationToHome : LoginNavigation()
-        object NavigationToSignUp : LoginNavigation()
     }
 
     sealed class ForgotPasswordState {

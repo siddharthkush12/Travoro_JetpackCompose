@@ -1,4 +1,4 @@
-package com.example.travelapp.ui.home.TravelAI
+package com.example.travelapp.ui.home.travelAI
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,20 +47,19 @@ class TravelAiViewModel @Inject constructor(
 
     private fun startConversation() {
         step = 0
+        _uiState.value = TravelAiEvent.Idle
         _messages.value = listOf(
-            AiChatMessage(text = "Hi 👋 I'm your AI travel planner"),
-            AiChatMessage(
-                text = "What is your trip budget?",
-                options = listOf("5000", "10000", "50000", "150000")
-            )
+
+            AiChatMessage(text = "What is your total trip budget?") // No options, waiting for text
         )
     }
 
 
-    /* ---------------- USER OPTION CLICK ---------------- */
+    /* ---------------- USER INPUT SUBMITTED ---------------- */
 
-    fun onOptionSelected(option: String) {
-        when(option){
+    fun onOptionSelected(textInput: String) {
+        // Handle post-generation action buttons
+        when(textInput) {
             "Restart Trip" -> {
                 resetFlow()
                 return
@@ -70,73 +69,39 @@ class TravelAiViewModel @Inject constructor(
                 return
             }
         }
+
         val list = _messages.value.toMutableList()
         list.add(
             AiChatMessage(
-                text = option,
+                text = textInput,
                 isUser = true
             )
         )
+
+        // Process the steps based on free-text input
         when (step) {
             0 -> {
-                budget = option
+                budget = textInput
                 step = 1
-                list.add(
-                    AiChatMessage(
-                        text = "How many days?",
-                        options = listOf("2", "3", "5", "7", "10")
-                    )
-                )
+                list.add(AiChatMessage(text = "How many days are you planning to travel?"))
             }
             1 -> {
-                days = option
+                days = textInput
                 step = 2
-                list.add(
-                    AiChatMessage(
-                        text = "What travel style do you prefer?",
-                        options = listOf(
-                            "adventure",
-                            "relax",
-                            "luxury",
-                            "budget",
-                            "nature",
-                            "spiritual"
-                        )
-                    )
-                )
+                list.add(AiChatMessage(text = "What travel style do you prefer? (e.g., Adventure, Relaxing, Luxury)"))
             }
             2 -> {
-                travelStyle = option
+                travelStyle = textInput
                 step = 3
-                list.add(
-                    AiChatMessage(
-                        text = "Who are you travelling with?",
-                        options = listOf(
-                            "solo",
-                            "couple",
-                            "friends",
-                            "family"
-                        )
-                    )
-                )
+                list.add(AiChatMessage(text = "Who are you travelling with? (e.g., Solo, Partner, Family)"))
             }
             3 -> {
-                groupType = option
+                groupType = textInput
                 step = 4
-                list.add(
-                    AiChatMessage(
-                        text = "What is your starting city?",
-                        options = listOf(
-                            "bangalore",
-                            "delhi",
-                            "mumbai",
-                            "lucknow"
-                        )
-                    )
-                )
+                list.add(AiChatMessage(text = "What is your starting city?"))
             }
             4 -> {
-                currentCity = option
+                currentCity = textInput
                 _messages.value = list
                 generateTrip()
                 return
@@ -150,25 +115,22 @@ class TravelAiViewModel @Inject constructor(
     /* ---------------- GENERATE AI TRIP ---------------- */
 
     private fun generateTrip() {
-
         viewModelScope.launch {
-
             _uiState.value = TravelAiEvent.Loading
 
             val loadingList = _messages.value.toMutableList()
-
-            loadingList.add(
-                AiChatMessage(text = "🤖 Generating your trip...")
-            )
-
+            loadingList.add(AiChatMessage(text = "🤖 Generating your trip..."))
             _messages.value = loadingList
 
-            val response = safeApiCall {
+            // Strip out any text from numbers (e.g., if user typed "5000 rs", it becomes "5000")
+            val cleanBudget = budget.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 0
+            val cleanDays = days.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 0
 
+            val response = safeApiCall {
                 travelApi.generateAiTrip(
                     AiTripRequest(
-                        budget = budget.toInt(),
-                        days = days.toInt(),
+                        budget = cleanBudget,
+                        days = cleanDays,
                         travelStyle = travelStyle,
                         groupType = groupType,
                         currentCity = currentCity
@@ -177,38 +139,22 @@ class TravelAiViewModel @Inject constructor(
             }
 
             when (response) {
-
                 is ApiResult.Success -> {
-
                     val list = _messages.value.toMutableList()
+                    list.add(AiChatMessage(tripResult = response.data.data))
 
-                    list.add(
-                        AiChatMessage(
-                            tripResult = response.data.data
-                        )
-                    )
-
+                    // I kept these two as buttons because they are Actions, not answers.
                     list.add(
                         AiChatMessage(
                             text = "Would you like another plan?",
-                            options = listOf(
-                                "Regenerate Trip",
-                                "Restart Trip"
-                            )
+                            options = listOf("Regenerate Trip", "Restart Trip")
                         )
                     )
-
                     _messages.value = list
                     _uiState.value = TravelAiEvent.Success
                 }
-
-                is ApiResult.Error -> {
-                    resetFlowWithError(response.message)
-                }
-
-                is ApiResult.Exception -> {
-                    resetFlowWithError(response.message)
-                }
+                is ApiResult.Error -> resetFlowWithError(response.message)
+                is ApiResult.Exception -> resetFlowWithError(response.message)
             }
         }
     }
@@ -221,37 +167,21 @@ class TravelAiViewModel @Inject constructor(
             _uiState.value = TravelAiEvent.Loading
 
             val response = safeApiCall {
-                travelApi.acceptTrip(
-                    AcceptTripRequest(data = tripData)
-                )
+                travelApi.acceptTrip(AcceptTripRequest(data = tripData))
             }
 
             when (response) {
-
                 is ApiResult.Success -> {
                     val list = _messages.value.toMutableList()
                     val tripId = response.data.data.id
 
-                    list.add(
-                        AiChatMessage(
-                            text = "✅ Trip saved successfully!"
-                        )
-                    )
-
+                    list.add(AiChatMessage(text = "✅ Trip saved successfully!"))
                     _messages.value = list
                     _uiState.value = TravelAiEvent.Success
-                    _navigationEvent.emit(
-                        TravelAiNavigation.NavigateToAddMembers(tripId)
-                    )
+                    _navigationEvent.emit(TravelAiNavigation.NavigateToAddMembers(tripId))
                 }
-
-                is ApiResult.Error -> {
-                    _uiState.value = TravelAiEvent.Error(response.message)
-                }
-
-                is ApiResult.Exception -> {
-                    _uiState.value = TravelAiEvent.Error(response.message)
-                }
+                is ApiResult.Error -> _uiState.value = TravelAiEvent.Error(response.message)
+                is ApiResult.Exception -> _uiState.value = TravelAiEvent.Error(response.message)
             }
         }
     }
@@ -260,30 +190,23 @@ class TravelAiViewModel @Inject constructor(
     /* ---------------- RESET FLOW ---------------- */
 
     private fun resetFlow() {
-
         step = 0
         budget = ""
         days = ""
         travelStyle = ""
         groupType = ""
         currentCity = ""
-
         startConversation()
     }
 
     private fun resetFlowWithError(message: String) {
-
         step = 0
-
+        _uiState.value = TravelAiEvent.Idle
         _messages.value = listOf(
             AiChatMessage(text = "⚠ $message"),
-            AiChatMessage(
-                text = "Let's try again. What is your trip budget?",
-                options = listOf("5000", "10000", "50000", "150000")
-            )
+            AiChatMessage(text = "Let's try again. What is your total trip budget?")
         )
     }
-
 
     /* ---------------- EVENTS ---------------- */
 

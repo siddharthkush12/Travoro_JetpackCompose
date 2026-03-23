@@ -22,6 +22,7 @@ runtime = "1.10.5"
 foundationVersion = "1.10.5"
 googleGmsGoogleServices = "4.4.4"
 firebaseMessaging = "25.0.1"
+uiGraphicsVersion = "1.10.5"
 
 
 
@@ -53,6 +54,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3",
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphicsVersion" }
 
 
 [plugins]
