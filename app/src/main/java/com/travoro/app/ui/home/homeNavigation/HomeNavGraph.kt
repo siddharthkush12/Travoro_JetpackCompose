@@ -10,34 +10,30 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.travelapp.ui.home.features.CreateTrips.CreateTripScreen
-
 import com.travoro.app.data.remote.dto.trips.TripDto
 import com.travoro.app.di.Session
-import com.travoro.app.ui.home.features.addMembers.AddMembersScreen
-import com.travoro.app.ui.home.Search.SearchTabScreen
-import com.travoro.app.ui.home.travelAI.TravelAITabScreen
 import com.travoro.app.ui.home.dashboard.HomeTabScreen
 import com.travoro.app.ui.home.dashboard.HomeViewModel
+import com.travoro.app.ui.home.features.addMembers.AddMembersScreen
+import com.travoro.app.ui.home.features.aiSearch.AiSearchScreen
 import com.travoro.app.ui.home.features.billSplit.BillSplitScreen
 import com.travoro.app.ui.home.features.billSplit.SplitExpenseScreen
+import com.travoro.app.ui.home.features.createTrips.CreateTripScreen
 import com.travoro.app.ui.home.features.findMember.FindMemberScreen
-
 import com.travoro.app.ui.home.features.sos.SosScreen
-import com.travoro.app.ui.home.features.translate.TranslateScreen
 import com.travoro.app.ui.home.message.ChatGroupScreen
 import com.travoro.app.ui.home.message.MessageScreen
 import com.travoro.app.ui.home.mytrips.MyTripDetailScreen
 import com.travoro.app.ui.home.mytrips.MyTripsScreen
-import com.travoro.app.ui.home.navigationDrawer.notification.NotificationScreen
-import com.travoro.app.ui.home.navigationDrawer.support.SupportScreen
 import com.travoro.app.ui.home.navigationDrawer.myaccount.MyAccountScreen
+import com.travoro.app.ui.home.navigationDrawer.notification.NotificationScreen
 import com.travoro.app.ui.home.navigationDrawer.options.DeveloperScreen
+import com.travoro.app.ui.home.navigationDrawer.support.SupportScreen
 import com.travoro.app.ui.home.profile.ProfileTabScreen
 import com.travoro.app.ui.home.profile.ProfileViewModel
+import com.travoro.app.ui.home.travelAI.TravelAITabScreen
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-
 
 @Composable
 fun HomeNavGraph(
@@ -46,16 +42,15 @@ fun HomeNavGraph(
     profileViewModel: ProfileViewModel,
     homeViewModel: HomeViewModel,
     paddingValues: PaddingValues,
-    session: Session
+    session: Session,
 ) {
     NavHost(
         navController = homeNavController,
         startDestination = HomeTab,
-
         enterTransition = {
             slideIntoContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(400)
+                animationSpec = tween(400),
             )
         },
         exitTransition = {
@@ -64,13 +59,12 @@ fun HomeNavGraph(
         popEnterTransition = {
             slideIntoContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                animationSpec = tween(400)
+                animationSpec = tween(400),
             )
         },
         popExitTransition = {
             fadeOut(animationSpec = tween(400))
-        }
-
+        },
     ) {
         composable<HomeTab> {
             HomeTabScreen(
@@ -78,7 +72,7 @@ fun HomeNavGraph(
                 homeNavController = homeNavController,
                 homeViewModel = homeViewModel,
                 profileViewModel = profileViewModel,
-                session = session
+                session = session,
             )
         }
         composable<TravelAITab> {
@@ -90,7 +84,7 @@ fun HomeNavGraph(
                 paddingValues = paddingValues,
                 onTripClick = { trip ->
                     homeNavController.navigate(MyTripDetail(trip = Json.encodeToString(trip)))
-                }
+                },
             )
         }
 
@@ -98,27 +92,24 @@ fun HomeNavGraph(
             val args = backStackEntry.toRoute<MyTripDetail>()
             val trip = Json.decodeFromString<TripDto>(args.trip)
             MyTripDetailScreen(
-                homeNavController=homeNavController,
+                homeNavController = homeNavController,
                 trip = trip,
                 onNavigateBack = { homeNavController.popBackStack() },
-                session = session
+                session = session,
             )
         }
 
-        composable<SearchTab> {
-            SearchTabScreen()
-        }
         composable<MyProfileTab> {
             ProfileTabScreen(
                 profileViewModel = profileViewModel,
-                onNavigateBack = { homeNavController.popBackStack() }
+                onNavigateBack = { homeNavController.popBackStack() },
             )
         }
         composable<MyAccount> {
             MyAccountScreen(
                 navController = homeNavController,
                 rootNavController = rootNavController,
-                session = session
+                session = session,
             )
         }
 
@@ -130,48 +121,45 @@ fun HomeNavGraph(
             SupportScreen(navController = homeNavController, profileViewModel = profileViewModel)
         }
 
-
         composable<DeveloperTab> {
             DeveloperScreen(navController = homeNavController)
         }
-
 
         composable<ChatGroupTab> {
             ChatGroupScreen(navController = homeNavController)
         }
 
-
         composable<CreateTripTab> {
             CreateTripScreen(
-                homeNavController = homeNavController
+                homeNavController = homeNavController,
             )
         }
 
         composable<Sos> {
             SosScreen(
-                onNavigateBack = { homeNavController.popBackStack() }
+                onNavigateBack = { homeNavController.popBackStack() },
             )
         }
 
-        composable<Translate> {
-            TranslateScreen(
-                homeNavController=homeNavController
+        composable<AiSearch> {
+            AiSearchScreen(
+                homeNavController = homeNavController,
             )
         }
 
         composable<FindMember> {
             FindMemberScreen(
-                homeNavController=homeNavController
+                homeNavController = homeNavController,
             )
         }
-
 
         composable<AddMembersTab> { backStackEntry ->
             val args = backStackEntry.toRoute<AddMembersTab>()
             AddMembersScreen(
                 tripId = args.tripId,
                 onNavigateBack = { homeNavController.popBackStack() },
-                navController = homeNavController
+                navController = homeNavController,
+                days = args.days,
             )
         }
 
@@ -181,17 +169,16 @@ fun HomeNavGraph(
                 groupId = args.groupId,
                 userId = requireNotNull(session.getUserId()),
                 onClickBack = { homeNavController.popBackStack() },
-                session = session
+                session = session,
             )
         }
-
 
         composable<BillSplit> {
             BillSplitScreen(
                 onTripClick = { trip ->
                     homeNavController.navigate(SplitExpense(trip = Json.encodeToString(trip)))
                 },
-                homeNavController = homeNavController
+                homeNavController = homeNavController,
             )
         }
 
@@ -200,7 +187,7 @@ fun HomeNavGraph(
             val trip = Json.decodeFromString<TripDto>(args.trip)
             SplitExpenseScreen(
                 trip = trip,
-                onNavigateBack = { homeNavController.popBackStack() }
+                onNavigateBack = { homeNavController.popBackStack() },
             )
         }
     }

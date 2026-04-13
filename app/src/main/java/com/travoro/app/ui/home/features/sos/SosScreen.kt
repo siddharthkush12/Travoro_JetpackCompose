@@ -2,27 +2,21 @@ package com.travoro.app.ui.home.features.sos
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -31,40 +25,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.travoro.app.ui.components.CustomTopBar
 import com.travoro.app.ui.theme.ErrorRed
 import com.travoro.app.ui.theme.SuccessGreen
 import com.travoro.app.ui.utils.TripLocationService
-import androidx.core.net.toUri
 
 @Composable
 fun SosScreen(
     onNavigateBack: () -> Unit
 ) {
-
     val dynamicColor = MaterialTheme.colorScheme.onSurface
     var isTriggered by remember { mutableStateOf(false) }
-    val liveLocationRunning= TripLocationService.isRunning
-
+    val liveLocationRunning = TripLocationService.isRunning
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-
+            .background(MaterialTheme.colorScheme.background),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-
             CustomTopBar(
                 title = "EMERGENCY PROTOCOL",
                 icon = Icons.Rounded.Warning,
                 onBackClick = onNavigateBack,
                 modifier = Modifier.fillMaxWidth(),
                 subtitle = "CRITICAL RESPONSE SYSTEM",
-                subTitleSize = 11.sp
+                subTitleSize = 11.sp,
             )
-
-
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -72,67 +60,64 @@ fun SosScreen(
                     start = 24.dp,
                     end = 24.dp,
                     top = 20.dp,
-                    bottom = 100.dp
+                    bottom = 100.dp,
                 ),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
-
-                item{
-                    EnableLiveLocationCard(liveLocationRunning,dynamicColor)
+                item {
+                    EnableLiveLocationCard(liveLocationRunning, dynamicColor)
                 }
-
 
                 item {
                     Box(
                         modifier = Modifier.size(240.dp),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
-                        // Static Halo 1 (Outer Target Ring)
                         Box(
                             modifier = Modifier
                                 .size(220.dp)
                                 .clip(CircleShape)
                                 .border(1.dp, ErrorRed.copy(alpha = 0.2f), CircleShape)
-                                .background(ErrorRed.copy(alpha = 0.03f))
+                                .background(ErrorRed.copy(alpha = 0.03f)),
                         )
-
-                        // Static Halo 2 (Inner Target Ring)
                         Box(
                             modifier = Modifier
                                 .size(190.dp)
                                 .clip(CircleShape)
                                 .border(2.dp, ErrorRed.copy(alpha = 0.4f), CircleShape)
-                                .background(ErrorRed.copy(alpha = 0.05f))
+                                .background(ErrorRed.copy(alpha = 0.05f)),
                         )
 
-                        // Main Button
                         Surface(
                             modifier = Modifier
                                 .size(160.dp)
-                                .clickable { isTriggered = !isTriggered }, // Toggle trigger state
+                                .clickable { isTriggered = !isTriggered },
                             shape = CircleShape,
                             color = ErrorRed.copy(alpha = 0.1f),
                             border = BorderStroke(2.dp, ErrorRed),
-                            shadowElevation = if (isTriggered) 0.dp else 12.dp
+                            shadowElevation = if (isTriggered) 0.dp else 12.dp,
                         ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(8.dp)
                                     .clip(CircleShape)
-                                    .background(if (isTriggered) ErrorRed else ErrorRed.copy(alpha = 0.2f)),
-                                contentAlignment = Alignment.Center
+                                    .background(
+                                        if (isTriggered) ErrorRed else ErrorRed.copy(
+                                            alpha = 0.2f
+                                        )
+                                    ),
+                                contentAlignment = Alignment.Center,
                             ) {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
+                                    verticalArrangement = Arrangement.Center,
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.CellTower,
                                         contentDescription = null,
                                         tint = if (isTriggered) Color.White else ErrorRed,
-                                        modifier = Modifier.size(36.dp)
+                                        modifier = Modifier.size(36.dp),
                                     )
                                     Spacer(Modifier.height(8.dp))
                                     Text(
@@ -140,10 +125,10 @@ fun SosScreen(
                                         style = TextStyle(
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.Black,
-                                            letterSpacing = 2.sp
+                                            letterSpacing = 2.sp,
                                         ),
                                         color = if (isTriggered) Color.White else ErrorRed,
-                                        textAlign = TextAlign.Center
+                                        textAlign = TextAlign.Center,
                                     )
                                 }
                             }
@@ -159,26 +144,24 @@ fun SosScreen(
                             style = TextStyle(
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Black,
-                                letterSpacing = 1.5.sp
+                                letterSpacing = 1.5.sp,
                             ),
-                            color = dynamicColor.copy(alpha = 0.4f)
+                            color = dynamicColor.copy(alpha = 0.4f),
                         )
                         Spacer(Modifier.height(12.dp))
 
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
-
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ){
-
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
                                 AuthorityButton(
                                     "POLICE",
                                     "100",
                                     Icons.Rounded.LocalPolice,
                                     ErrorRed,
-                                    Modifier.weight(1f)
+                                    Modifier.weight(1f),
                                 )
 
                                 AuthorityButton(
@@ -186,22 +169,19 @@ fun SosScreen(
                                     "108",
                                     Icons.Rounded.MedicalServices,
                                     ErrorRed,
-                                    Modifier.weight(1f)
+                                    Modifier.weight(1f),
                                 )
-
                             }
 
-
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ){
-
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
                                 AuthorityButton(
                                     "FIRE",
                                     "101",
                                     Icons.Rounded.FireTruck,
                                     ErrorRed,
-                                    Modifier.weight(1f)
+                                    Modifier.weight(1f),
                                 )
 
                                 AuthorityButton(
@@ -209,16 +189,13 @@ fun SosScreen(
                                     "112",
                                     Icons.Rounded.Emergency,
                                     ErrorRed,
-                                    Modifier.weight(1f)
+                                    Modifier.weight(1f),
                                 )
-
                             }
-
                         }
                     }
                     Spacer(Modifier.height(24.dp))
                 }
-
             }
         }
     }
@@ -233,11 +210,11 @@ fun EnableLiveLocationCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         color = ErrorRed.copy(alpha = 0.05f),
-        border = BorderStroke(1.dp, ErrorRed.copy(alpha = 0.2f))
+        border = BorderStroke(1.dp, ErrorRed.copy(alpha = 0.2f)),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
                 modifier = Modifier
@@ -245,13 +222,13 @@ fun EnableLiveLocationCard(
                     .clip(CircleShape)
                     .background(ErrorRed.copy(alpha = 0.1f))
                     .border(1.dp, ErrorRed.copy(alpha = 0.3f), CircleShape),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    if(liveLocationStatus) Icons.Rounded.LocationOn else Icons.Rounded.LocationOff,
+                    if (liveLocationStatus) Icons.Rounded.LocationOn else Icons.Rounded.LocationOff,
                     contentDescription = null,
-                    tint = if(liveLocationStatus) SuccessGreen else ErrorRed.copy(alpha = 0.3f),
-                    modifier = Modifier.size(20.dp)
+                    tint = if (liveLocationStatus) SuccessGreen else ErrorRed.copy(alpha = 0.3f),
+                    modifier = Modifier.size(20.dp),
                 )
             }
 
@@ -263,41 +240,33 @@ fun EnableLiveLocationCard(
                     style = TextStyle(
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Black,
-                        letterSpacing = 1.5.sp
+                        letterSpacing = 1.5.sp,
                     ),
-                    color = ErrorRed.copy(alpha = 0.8f)
+                    color = ErrorRed.copy(alpha = 0.8f),
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = if(liveLocationStatus) "Your trip members can track you" else "Location sharing is disabled",
+                    text = if (liveLocationStatus) "Your trip members can track you" else "Location sharing is disabled",
                     style = TextStyle(
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Black,
-                        letterSpacing = 1.sp
+                        letterSpacing = 1.sp,
                     ),
-                    color = dynamicColor
+                    color = dynamicColor,
                 )
             }
         }
     }
 }
 
-
-
 fun callNumber(
     context: Context,
-    number: String
-){
-
-    val intent =
-        Intent(Intent.ACTION_DIAL)
-
+    number: String,
+) {
+    val intent = Intent(Intent.ACTION_DIAL)
     intent.data = "tel:$number".toUri()
-
     context.startActivity(intent)
-
 }
-
 
 @Composable
 fun AuthorityButton(
@@ -305,23 +274,23 @@ fun AuthorityButton(
     number: String,
     icon: ImageVector,
     ErrorRed: Color,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
-    val context=LocalContext.current
+    val context = LocalContext.current
     Surface(
         modifier = modifier.clickable {
             callNumber(
                 context = context,
-                number = number
+                number = number,
             )
         },
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(icon, contentDescription = null, tint = ErrorRed, modifier = Modifier.size(28.dp))
             Spacer(Modifier.height(12.dp))
@@ -330,15 +299,15 @@ fun AuthorityButton(
                 style = TextStyle(
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Black,
-                    letterSpacing = 1.sp
+                    letterSpacing = 1.sp,
                 ),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = number,
                 style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Black),
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }

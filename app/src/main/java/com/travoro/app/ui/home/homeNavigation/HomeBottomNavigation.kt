@@ -10,29 +10,29 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class HomeBottomNavigation(
     val destination: Any,
     val title: String,
-    val icon: ImageVector
+    val icon: ImageVector,
 ) {
     object Home : HomeBottomNavigation(
         destination = HomeTab,
         title = "Home",
-        icon = Icons.Filled.Home
+        icon = Icons.Filled.Home,
     )
 
     object TravelAI : HomeBottomNavigation(
         destination = TravelAITab,
         title = "TravelAI",
-        icon = Icons.Filled.AutoAwesome
+        icon = Icons.Filled.AutoAwesome,
     )
 
     object Messages : HomeBottomNavigation(
         destination = ChatGroupTab,
         title = "Message",
-        icon = Icons.Filled.Chat
+        icon = Icons.Filled.Chat,
     )
 
     object MyTrips : HomeBottomNavigation(
         destination = MyTripsTab,
         title = "My Trips",
-        icon = Icons.Filled.CardTravel
+        icon = Icons.Filled.CardTravel,
     )
 }

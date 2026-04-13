@@ -40,7 +40,7 @@ import com.travoro.app.ui.utils.uriToMultipart
 @Composable
 fun ProfileTabScreen(
     profileViewModel: ProfileViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val profile by profileViewModel.profile.collectAsStateWithLifecycle()
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
@@ -49,11 +49,11 @@ fun ProfileTabScreen(
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.GetContent(),
     ) { uri -> selectedImageUri = uri }
 
     LaunchedEffect(Unit) {
-            profileViewModel.fetchProfile()
+        profileViewModel.fetchProfile()
     }
 
     var fullname by remember { mutableStateOf("") }
@@ -83,10 +83,12 @@ fun ProfileTabScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.background),
     ) {
         CustomTopBar(
-            title = "USER IDENTITY", icon = Icons.Rounded.VerifiedUser, onBackClick = onNavigateBack
+            title = "USER IDENTITY",
+            icon = Icons.Rounded.VerifiedUser,
+            onBackClick = onNavigateBack,
         )
 
         if (uiState is ProfileViewModel.ProfileEvent.Loading) {
@@ -101,13 +103,14 @@ fun ProfileTabScreen(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 ProfileImageCard(
                     profilePic = selectedImageUri ?: profilePic,
-                    onImageClick = { launcher.launch("image/*") })
+                    onImageClick = { launcher.launch("image/*") },
+                )
 
                 SectionCard(title = "CORE IDENTITY") {
                     GeneralDetails(
@@ -116,7 +119,8 @@ fun ProfileTabScreen(
                         gender,
                         { fullname = it },
                         { dob = it },
-                        { gender = it })
+                        { gender = it },
+                    )
                 }
 
                 SectionCard(title = "COMMUNICATION") {
@@ -130,17 +134,24 @@ fun ProfileTabScreen(
                         country,
                         { city = it },
                         { state = it },
-                        { country = it })
+                        { country = it },
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
-
 
                 Button(
                     onClick = {
                         val imagePart = selectedImageUri?.let { uriToMultipart(context, it) }
                         profileViewModel.updateProfile(
-                            imagePart, fullname, dob, gender, phone, city, state, country
+                            imagePart,
+                            fullname,
+                            dob,
+                            gender,
+                            phone,
+                            city,
+                            state,
+                            country,
                         )
                         profileViewModel.fetchProfile()
                     },
@@ -149,12 +160,12 @@ fun ProfileTabScreen(
                         .height(56.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp),
                 ) {
                     Text(
                         "UPDATE IDENTITY DATA",
                         fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.sp
+                        letterSpacing = 1.sp,
                     )
                 }
 
@@ -164,12 +175,11 @@ fun ProfileTabScreen(
     }
 }
 
-
 @Composable
 fun SectionCard(
     modifier: Modifier = Modifier,
     title: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -178,12 +188,15 @@ fun SectionCard(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)),
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(20.dp),
         ) {
             Text(
-                text = title, style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Black, letterSpacing = 2.sp, color = TealCyan
-                )
+                text = title,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 2.sp,
+                    color = TealCyan,
+                ),
             )
             Spacer(modifier = Modifier.height(20.dp))
             content()
@@ -194,23 +207,27 @@ fun SectionCard(
 @Composable
 fun ProfileImageCard(
     profilePic: Any?,
-    onImageClick: () -> Unit
+    onImageClick: () -> Unit,
 ) {
     Box(
-        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center,
     ) {
         Box {
-
             Box(
                 modifier = Modifier
                     .size(120.dp)
                     .clip(CircleShape)
                     .border(
                         width = 2.dp,
-                        brush = Brush.sweepGradient(listOf(TealCyan, Color(0xFF00D9F5), TealCyan)),
-                        shape = CircleShape
+                        brush = Brush.sweepGradient(
+                            listOf(
+                                TealCyan, Color(0xFF00D9F5), TealCyan
+                            )
+                        ),
+                        shape = CircleShape,
                     )
-                    .padding(6.dp)
+                    .padding(6.dp),
             ) {
                 AsyncImage(
                     model = profilePic,
@@ -218,10 +235,9 @@ fun ProfileImageCard(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CircleShape),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
                 )
             }
-
 
             Box(
                 modifier = Modifier
@@ -229,22 +245,23 @@ fun ProfileImageCard(
                     .offset(x = (-4).dp, y = (-4).dp)
                     .size(36.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface) // Solid background to cut out the image
+                    .background(MaterialTheme.colorScheme.surface)
                     .border(1.dp, Color.White.copy(alpha = 0.1f), CircleShape)
-                    .padding(2.dp)
+                    .padding(2.dp),
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CircleShape)
                         .background(TealCyan)
-                        .clickable { onImageClick() }, contentAlignment = Alignment.Center
+                        .clickable { onImageClick() },
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.CameraAlt,
                         contentDescription = "Edit Profile",
                         tint = Color.White,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(18.dp),
                     )
                 }
             }
@@ -265,7 +282,7 @@ fun ContactDetails(
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Encrypted Phone") },
             value = phone,
-            onValueChange = onPhoneChange
+            onValueChange = onPhoneChange,
         )
 
         Column {
@@ -281,7 +298,7 @@ fun ContactDetails(
                         Icons.Default.Lock,
                         contentDescription = null,
                         tint = dynamicColor.copy(alpha = 0.3f),
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(18.dp),
                     )
                 },
                 colors = OutlinedTextFieldDefaults.colors(
@@ -292,15 +309,15 @@ fun ContactDetails(
                     focusedContainerColor = dynamicColor.copy(alpha = 0.02f),
                     unfocusedContainerColor = dynamicColor.copy(alpha = 0.02f),
                     focusedTextColor = dynamicColor.copy(alpha = 0.5f),
-                    unfocusedTextColor = dynamicColor.copy(alpha = 0.5f)
-                )
+                    unfocusedTextColor = dynamicColor.copy(alpha = 0.5f),
+                ),
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 "Primary email is permanently bound to the Core System.",
                 fontSize = 11.sp,
                 color = dynamicColor.copy(alpha = 0.5f),
-                modifier = Modifier.padding(start = 4.dp)
+                modifier = Modifier.padding(start = 4.dp),
             )
         }
     }
@@ -313,26 +330,28 @@ fun GeneralDetails(
     gender: String,
     onFullNameChange: (String) -> Unit,
     onDOBChange: (String) -> Unit,
-    onGenderChange: (String) -> Unit
+    onGenderChange: (String) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         CustomEditText(
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Designation (Full Name)") },
             value = fullname,
-            onValueChange = onFullNameChange
+            onValueChange = onFullNameChange,
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             CustomDatePickerField(
-                modifier = Modifier.weight(1.5f), selectedDate = dob, onDateSelected = onDOBChange
+                modifier = Modifier.weight(1.5f),
+                selectedDate = dob,
+                onDateSelected = onDOBChange,
             )
             CustomDropdownField(
                 modifier = Modifier.weight(1f),
                 selectedValue = gender,
                 options = listOf("Male", "Female", "Other"),
                 label = "Identity",
-                onValueChange = onGenderChange
+                onValueChange = onGenderChange,
             )
         }
     }
@@ -345,9 +364,8 @@ fun AddressDetails(
     country: String,
     onCityChange: (String) -> Unit,
     onStateChange: (String) -> Unit,
-    onCountryChange: (String) -> Unit
+    onCountryChange: (String) -> Unit,
 ) {
-
     val indianStatesAndUTs = listOf(
         "Andaman and Nicobar Islands",
         "Andhra Pradesh",
@@ -384,7 +402,7 @@ fun AddressDetails(
         "Tripura",
         "Uttar Pradesh",
         "Uttarakhand",
-        "West Bengal"
+        "West Bengal",
     )
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -392,21 +410,21 @@ fun AddressDetails(
                 modifier = Modifier.weight(1f),
                 label = { Text("City") },
                 value = city,
-                onValueChange = onCityChange
+                onValueChange = onCityChange,
             )
             CustomDropdownField(
                 modifier = Modifier.weight(1f),
                 selectedValue = state,
                 options = indianStatesAndUTs,
                 label = "State/Province",
-                onValueChange = onStateChange
+                onValueChange = onStateChange,
             )
         }
         CustomEditText(
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Global Region (Country)") },
             value = country,
-            onValueChange = onCountryChange
+            onValueChange = onCountryChange,
         )
     }
 }

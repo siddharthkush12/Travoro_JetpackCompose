@@ -1,5 +1,6 @@
 package com.travoro.app.ui.home.navigationDrawer.myaccount
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ExitToApp
@@ -22,7 +22,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -35,7 +37,6 @@ import com.travoro.app.di.Session
 import com.travoro.app.di.SocketManager
 import com.travoro.app.rootNavigation.Home
 import com.travoro.app.rootNavigation.Login
-import com.travoro.app.ui.components.AuthInputText
 import com.travoro.app.ui.components.CustomTopBar
 import com.travoro.app.ui.home.homeNavigation.MyProfileTab
 import com.travoro.app.ui.theme.ErrorRed
@@ -48,7 +49,7 @@ fun MyAccountScreen(
     navController: NavController,
     viewModel: MyAccountViewModel = hiltViewModel(),
     rootNavController: NavController,
-    session: Session
+    session: Session,
 ) {
     val sheetState = rememberModalBottomSheetState()
     val showBottomSheet = remember { mutableStateOf(false) }
@@ -59,12 +60,12 @@ fun MyAccountScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.background),
     ) {
         CustomTopBar(
             title = "MY ACCOUNT",
             icon = Icons.Rounded.VerifiedUser,
-            onBackClick = { navController.popBackStack() }
+            onBackClick = { navController.popBackStack() },
         )
 
         Column(
@@ -72,35 +73,38 @@ fun MyAccountScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(28.dp),
                 color = MaterialTheme.colorScheme.surface,
                 border = BorderStroke(
-                    1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.02f)
+                    1.dp,
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.02f),
                 ),
-                shadowElevation = 2.dp
+                shadowElevation = 2.dp,
             ) {
                 Row(
                     modifier = Modifier.padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-
                     Box(
                         modifier = Modifier
                             .size(86.dp)
                             .clip(CircleShape)
                             .border(
-                                width = 2.dp, brush = Brush.sweepGradient(
+                                width = 2.dp,
+                                brush = Brush.sweepGradient(
                                     listOf(
-                                        TealCyanDark, TealCyan.copy(alpha = 0.2f), TealCyanDark
-                                    )
-                                ), shape = CircleShape
+                                        TealCyanDark,
+                                        TealCyan.copy(alpha = 0.2f),
+                                        TealCyanDark,
+                                    ),
+                                ),
+                                shape = CircleShape,
                             )
-                            .padding(4.dp)
+                            .padding(4.dp),
                     ) {
                         AsyncImage(
                             model = session.getProfileImage() ?: "",
@@ -108,7 +112,7 @@ fun MyAccountScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(CircleShape),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Crop,
                         )
                     }
 
@@ -119,10 +123,11 @@ fun MyAccountScreen(
                             Text(
                                 text = "SIDDHARTH KUSHWAHA",
                                 style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.Black, letterSpacing = 1.sp
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 1.sp,
                                 ),
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
                             )
                             Spacer(Modifier.width(6.dp))
 
@@ -130,7 +135,7 @@ fun MyAccountScreen(
                                 modifier = Modifier
                                     .size(6.dp)
                                     .clip(CircleShape)
-                                    .background(TealCyan)
+                                    .background(TealCyan),
                             )
                         }
 
@@ -140,26 +145,26 @@ fun MyAccountScreen(
 
                         Spacer(modifier = Modifier.height(4.dp))
                         ContactDataRow(
-                            icon = Icons.Rounded.Email, text = "siddharthkush12@gmail.com"
+                            icon = Icons.Rounded.Email,
+                            text = "siddharthkush12@gmail.com",
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-
                         Surface(
                             modifier = Modifier.clickable { navController.navigate(MyProfileTab) },
                             shape = RoundedCornerShape(8.dp),
-                            color = TealCyan.copy(alpha = 0.1f)
+                            color = TealCyan.copy(alpha = 0.1f),
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Icon(
                                     Icons.Rounded.Edit,
                                     contentDescription = null,
                                     tint = TealCyan,
-                                    modifier = Modifier.size(12.dp)
+                                    modifier = Modifier.size(12.dp),
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
@@ -167,7 +172,7 @@ fun MyAccountScreen(
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = TealCyan,
-                                    letterSpacing = 1.sp
+                                    letterSpacing = 1.sp,
                                 )
                             }
                         }
@@ -175,43 +180,44 @@ fun MyAccountScreen(
                 }
             }
 
-
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
                     text = "ACCESS PROTOCOLS",
                     style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Black, letterSpacing = 2.sp
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 2.sp,
                     ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp),
                 )
 
                 SystemActionTile(
                     title = "ACCOUNT MANAGEMENT",
                     icon = Icons.Rounded.Security,
                     iconTint = TealCyan,
-                    onClick = { showBottomSheet.value = true })
+                    onClick = { showBottomSheet.value = true },
+                )
 
                 SystemActionTile(
                     title = "TERMINATE SESSION",
                     icon = Icons.Rounded.PowerSettingsNew,
                     iconTint = ErrorRed,
-                    onClick = { showLogoutDialog.value = true })
+                    onClick = { showLogoutDialog.value = true },
+                )
             }
         }
-
 
         if (showBottomSheet.value) {
             ModalBottomSheet(
                 onDismissRequest = { showBottomSheet.value = false },
                 sheetState = sheetState,
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = MaterialTheme.colorScheme.surface,
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     Text(
                         text = "SECURITY OVERRIDE",
@@ -220,7 +226,7 @@ fun MyAccountScreen(
                         letterSpacing = 2.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -229,21 +235,24 @@ fun MyAccountScreen(
                         title = "Update Passkey",
                         color = TealCyan,
                         onClick = {
-                            showChangePasswordDialog.value = true; showBottomSheet.value = false
-                        })
+                            showChangePasswordDialog.value = true
+                            showBottomSheet.value = false
+                        },
+                    )
 
                     BottomSheetOption(
                         icon = Icons.Rounded.DeleteForever,
                         title = "Delete Account",
                         color = ErrorRed,
-                        onClick = { showDeleteDialog.value = true; showBottomSheet.value = false })
+                        onClick = {
+                            showDeleteDialog.value = true
+                            showBottomSheet.value = false
+                        },
+                    )
                     Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         }
-
-
-
 
         if (showChangePasswordDialog.value) {
             val oldPassword by viewModel.oldPassword.collectAsStateWithLifecycle()
@@ -253,45 +262,73 @@ fun MyAccountScreen(
                 title = "UPDATE PASSKEY",
                 icon = Icons.Rounded.LockReset,
                 iconTint = TealCyan,
-                onDismiss = { showChangePasswordDialog.value = false },
-                onConfirm = { viewModel.changePassword(); showChangePasswordDialog.value = false },
-                confirmText = "UPDATE"
+                onDismiss = {
+                    showChangePasswordDialog.value = false
+                },
+                onConfirm = {
+                    viewModel.changePassword()
+
+                    showChangePasswordDialog.value = false
+                },
+                confirmText = "UPDATE",
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    AuthInputText(
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    OutlinedTextField(
                         value = oldPassword,
-                        onValueChange = { viewModel.onOldPasswordChange(it) },
-                        label = "Current Passkey",
+                        onValueChange = {
+                            viewModel.onOldPasswordChange(it)
+                        },
+                        label = {
+                            Text("Current Passkey")
+                        },
+                        placeholder = {
+                            Text("Enter current...")
+                        },
+                        visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = "Enter current...",
-                        keyboardOption = KeyboardOptions.Default
                     )
-                    AuthInputText(
+
+                    OutlinedTextField(
                         value = newPassword,
-                        onValueChange = { viewModel.onNewPasswordChange(it) },
-                        label = "New Passkey",
+                        onValueChange = {
+                            viewModel.onNewPasswordChange(it)
+                        },
+                        label = {
+                            Text("New Passkey")
+                        },
+                        placeholder = {
+                            Text("Enter new...")
+                        },
+                        visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = "Enter new...",
-                        keyboardOption = KeyboardOptions.Default
                     )
                 }
             }
         }
 
         if (showDeleteDialog.value) {
+            val context = LocalContext.current
             SystemDialog(
                 title = "DELETE ACCOUNT",
                 icon = Icons.Rounded.Warning,
                 iconTint = ErrorRed,
                 onDismiss = { showDeleteDialog.value = false },
-                onConfirm = { viewModel.deleteAccount() },
+                onConfirm = {
+                    Toast.makeText(
+                        context,
+                        "Request for account deletion is successfully submitted it will deleted within 7 days",
+                        Toast.LENGTH_LONG,
+                    ).show()
+                },
                 confirmText = "DELETE DATA",
-                confirmColor = ErrorRed
+                confirmColor = ErrorRed,
             ) {
                 Text(
                     text = "This action is irreversible. All architecture, itineraries, and preferences will be permanently wiped from the Vani Core.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -309,35 +346,35 @@ fun MyAccountScreen(
                     session.removeProfileImage()
                     rootNavController.navigate(Login) { popUpTo(Home) { inclusive = true } }
                 },
-                confirmText = "LOGOUT"
+                confirmText = "LOGOUT",
             ) {
                 Text(
                     text = "Are you sure you want to disconnect from the Vani System?",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
     }
 }
 
-
 @Composable
 fun ContactDataRow(
-    icon: ImageVector, text: String
+    icon: ImageVector,
+    text: String,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.size(14.dp)
+            modifier = Modifier.size(14.dp),
         )
         Spacer(Modifier.width(8.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
         )
     }
 }
@@ -347,7 +384,7 @@ fun SystemActionTile(
     title: String,
     icon: ImageVector,
     iconTint: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -358,34 +395,40 @@ fun SystemActionTile(
         shape = RoundedCornerShape(28.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.02f)),
-        shadowElevation = 1.dp
+        shadowElevation = 1.dp,
     ) {
         Row(
-            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(iconTint.copy(alpha = 0.1f)), contentAlignment = Alignment.Center
+                    .background(iconTint.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
                     tint = iconTint,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
             Text(
-                text = title, style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Black, letterSpacing = 1.sp
-                ), color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f)
+                text = title,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 1.sp,
+                ),
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f),
             )
             Icon(
                 imageVector = Icons.Rounded.ChevronRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             )
         }
     }
@@ -396,7 +439,7 @@ fun BottomSheetOption(
     icon: ImageVector,
     title: String,
     color: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -404,19 +447,19 @@ fun BottomSheetOption(
             .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = color,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = title,
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
@@ -430,7 +473,7 @@ fun SystemDialog(
     onConfirm: () -> Unit,
     confirmText: String,
     confirmColor: Color = TealCyan,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -442,13 +485,15 @@ fun SystemDialog(
                     imageVector = icon,
                     contentDescription = null,
                     tint = iconTint,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = title, style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Black, letterSpacing = 1.sp
-                    )
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 1.sp,
+                    ),
                 )
             }
         },
@@ -457,13 +502,13 @@ fun SystemDialog(
             Button(
                 onClick = onConfirm,
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = confirmColor)
+                colors = ButtonDefaults.buttonColors(containerColor = confirmColor),
             ) {
                 Text(
                     text = confirmText,
                     fontWeight = FontWeight.Black,
                     letterSpacing = 1.sp,
-                    color = Color.White
+                    color = Color.White,
                 )
             }
         },
@@ -472,9 +517,9 @@ fun SystemDialog(
                 Text(
                     text = "CANCEL",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
             }
-        }
+        },
     )
 }

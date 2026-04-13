@@ -2,7 +2,6 @@ package com.travoro.app.rootNavigation
 
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 object SplashScreen
 
@@ -17,4 +16,3 @@ object SignUp
 
 @Serializable
 object Home
-

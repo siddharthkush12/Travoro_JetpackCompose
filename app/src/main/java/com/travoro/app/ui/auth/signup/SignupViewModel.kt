@@ -1,7 +1,5 @@
 package com.travoro.app.ui.auth.signup
 
-
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.travoro.app.AppInitializer
@@ -18,35 +16,26 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class SignupViewModel @Inject constructor(
     val travelApiService: TravelApiService,
     val session: Session,
-    val appInitializer: AppInitializer
+    val appInitializer: AppInitializer,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow<SignUpEvent>(SignUpEvent.Nothing)
     val uiState = _uiState.asStateFlow()
-
     private val _navigationEvent = MutableSharedFlow<SignUpNavigation>()
     val navigationEvent = _navigationEvent.asSharedFlow()
-
-
     private val _fullName = MutableStateFlow("")
     val fullName = _fullName.asStateFlow()
-
     private val _email = MutableStateFlow("")
     val email = _email.asStateFlow()
-
     private val _password = MutableStateFlow("")
     val password = _password.asStateFlow()
-
 
     fun onNameChange(fullName: String) {
         _fullName.value = fullName
     }
-
 
     fun onEmailChange(email: String) {
         _email.value = email
@@ -55,7 +44,6 @@ class SignupViewModel @Inject constructor(
     fun onPasswordChange(password: String) {
         _password.value = password
     }
-
 
     fun onSignUpButtonClick() {
         viewModelScope.launch {
@@ -66,8 +54,8 @@ class SignupViewModel @Inject constructor(
                     SignupRequest(
                         name = _fullName.value,
                         email = _email.value,
-                        password = _password.value
-                    )
+                        password = _password.value,
+                    ),
                 )
             }
             when (response) {
@@ -82,30 +70,27 @@ class SignupViewModel @Inject constructor(
                 is ApiResult.Error -> {
                     _uiState.emit(
                         SignUpEvent.Error(
-                            response.message
-                        )
+                            response.message,
+                        ),
                     )
                 }
 
                 is ApiResult.Exception -> {
                     _uiState.emit(
                         SignUpEvent.Error(
-                            response.message
-                        )
+                            response.message,
+                        ),
                     )
                 }
             }
         }
-
     }
-
 
     fun onClearError() {
         viewModelScope.launch {
             _uiState.value = SignUpEvent.Nothing
         }
     }
-
 
     sealed class SignUpNavigation {
         object NavigationToHome : SignUpNavigation()
@@ -117,6 +102,4 @@ class SignupViewModel @Inject constructor(
         data class Error(val message: String) : SignUpEvent()
         object Loading : SignUpEvent()
     }
-
-
 }

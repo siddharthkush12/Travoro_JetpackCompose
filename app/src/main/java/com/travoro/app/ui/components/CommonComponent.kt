@@ -1,6 +1,7 @@
 package com.travoro.app.ui.components
 
-
+import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
-import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.AlertDialog
@@ -40,9 +40,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -83,63 +80,103 @@ import com.travoro.app.ui.theme.TealCyan
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 import java.util.TimeZone.getTimeZone
-
 
 @Composable
 fun ErrorAlertDialog(
-    message: String, onDismiss: () -> Unit
+    message: String,
+    onDismiss: () -> Unit,
 ) {
-
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.questioning))
-
+    val errorColor = MaterialTheme.colorScheme.error
+    val dynamicColor = MaterialTheme.colorScheme.onSurface
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(35.dp),
-        containerColor = Color.White,
+        shape = RoundedCornerShape(16.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
         icon = {
-            LottieAnimation(
-                composition = composition,
-                iterations = LottieConstants.IterateForever,
-                modifier = Modifier.size(200.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .background(errorColor.copy(alpha = 0.05f), RoundedCornerShape(16.dp))
+                    .border(1.dp, errorColor.copy(alpha = 0.2f), RoundedCornerShape(16.dp)),
+                contentAlignment = Alignment.Center,
+            ) {
+                LottieAnimation(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.size(100.dp),
+                )
+            }
         },
-
         title = {
-            Text(
-                text = "Something went wrong",
-                fontSize = 25.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "SYSTEM EXCEPTION",
+                    style = TextStyle(
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 2.sp,
+                    ),
+                    color = errorColor,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "ANOMALY DETECTED",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 1.sp,
+                    ),
+                    color = dynamicColor,
+                )
+            }
         },
         text = {
             Text(
-                text = message, fontSize = 16.sp, color = Color(0xFF555555), lineHeight = 20.sp
+                text = message,
+                style = TextStyle(
+                    fontSize = 13.sp,
+                    lineHeight = 20.sp,
+                ),
+                color = dynamicColor.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
             )
         },
         confirmButton = {
             Button(
                 onClick = onDismiss,
-                modifier = Modifier.padding(end = 8.dp),
-                colors = ButtonDefaults.buttonColors(TealCyan)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = errorColor.copy(alpha = 0.1f),
+                    contentColor = errorColor,
+                ),
+                border = BorderStroke(1.dp, errorColor.copy(alpha = 0.4f)),
+                elevation = ButtonDefaults.buttonElevation(0.dp),
             ) {
                 Text(
-                    text = "OK",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
+                    text = "ACKNOWLEDGE",
+                    style = TextStyle(
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 1.sp,
+                    ),
                 )
             }
-        })
+        },
+    )
 }
 
-
 @Composable
-fun BackRoundButton(
-    onClick: () -> Unit
-) {
+fun BackRoundButton(onClick: () -> Unit) {
     IconButton(
         onClick = onClick,
         modifier = Modifier
@@ -147,18 +184,18 @@ fun BackRoundButton(
             .size(46.dp)
             .zIndex(1f)
             .background(
-                color = Color.White.copy(alpha = 0.12f), shape = CircleShape
-            )
+                color = Color.White.copy(alpha = 0.12f),
+                shape = CircleShape,
+            ),
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "Back",
             tint = Color.White,
-            modifier = Modifier.size(22.dp)
+            modifier = Modifier.size(22.dp),
         )
     }
 }
-
 
 @Composable
 fun CustomEditText(
@@ -166,15 +203,13 @@ fun CustomEditText(
     label: @Composable () -> Unit,
     value: String,
     onValueChange: (String) -> Unit,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
-
     val dynamicColor = MaterialTheme.colorScheme.onSurface
 
     OutlinedTextField(
         value = value,
         onValueChange = { onValueChange(it) },
-
         modifier = modifier.fillMaxWidth(),
         singleLine = true,
         label = label,
@@ -192,12 +227,11 @@ fun CustomEditText(
             focusedLabelColor = TealCyan,
             unfocusedLabelColor = dynamicColor.copy(alpha = 0.6f),
             disabledLabelColor = dynamicColor.copy(alpha = 0.3f),
-            cursorColor = TealCyan
+            cursorColor = TealCyan,
         ),
-        enabled = enabled
+        enabled = enabled,
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -206,14 +240,15 @@ fun CustomDropdownField(
     selectedValue: String,
     options: List<String>,
     label: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
 ) {
-
     var expanded by remember { mutableStateOf(false) }
     val dynamicColor = MaterialTheme.colorScheme.onSurface
 
     ExposedDropdownMenuBox(
-        expanded = expanded, onExpandedChange = { expanded = !expanded }, modifier = modifier
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = modifier,
     ) {
         OutlinedTextField(
             value = selectedValue,
@@ -230,7 +265,7 @@ fun CustomDropdownField(
             shape = RoundedCornerShape(16.dp),
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = expanded
+                    expanded = expanded,
                 )
             },
             colors = OutlinedTextFieldDefaults.colors(
@@ -241,11 +276,11 @@ fun CustomDropdownField(
                 focusedBorderColor = TealCyan,
                 unfocusedBorderColor = dynamicColor.copy(alpha = 0.15f),
                 focusedLabelColor = TealCyan,
-                unfocusedLabelColor = dynamicColor.copy(alpha = 0.6f)
+                unfocusedLabelColor = dynamicColor.copy(alpha = 0.6f),
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable)
+                .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable),
         )
 
         ExposedDropdownMenu(
@@ -253,29 +288,30 @@ fun CustomDropdownField(
             onDismissRequest = { expanded = false },
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.95f))
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp)),
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
                     text = {
-                    Text(
-                        text = option,
-                        color = dynamicColor.copy(alpha = 0.9f),
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        fontSize = 14.sp,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }, onClick = {
-                    onValueChange(option)
-                    expanded = false
-                }, contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        Text(
+                            text = option,
+                            color = dynamicColor.copy(alpha = 0.9f),
+                            fontWeight = FontWeight.Medium,
+                            maxLines = 1,
+                            fontSize = 14.sp,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
+                    onClick = {
+                        onValueChange(option)
+                        expanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                 )
             }
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -283,51 +319,54 @@ fun CustomDatePickerField(
     modifier: Modifier = Modifier,
     selectedDate: String,
     label: String = "DOB",
-    onDateSelected: (String) -> Unit
+    onDateSelected: (String) -> Unit,
 ) {
     var showPicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     val dynamicColor = MaterialTheme.colorScheme.onSurface
 
-
     if (showPicker) {
         DatePickerDialog(
-            onDismissRequest = { showPicker = !showPicker }, confirmButton = {
-            TextButton(onClick = {
-                datePickerState.selectedDateMillis?.let { millis ->
-                    val formatter =
-                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                    formatter.timeZone = getTimeZone("UTC")
-                    onDateSelected(formatter.format(Date(millis)))
+            onDismissRequest = { showPicker = !showPicker },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        formatter.timeZone = getTimeZone("UTC")
+                        onDateSelected(formatter.format(Date(millis)))
+                    }
+                    showPicker = !showPicker
+                }) {
+                    Text(
+                        "CONFIRM",
+                        fontWeight = FontWeight.Black,
+                        color = TealCyan,
+                        letterSpacing = 1.sp,
+                    )
                 }
-                showPicker = !showPicker
-            }) {
-                Text(
-                    "CONFIRM",
-                    fontWeight = FontWeight.Black,
-                    color = TealCyan,
-                    letterSpacing = 1.sp
-                )
-            }
-        }, dismissButton = {
-            TextButton(onClick = { showPicker = !showPicker }) {
-                Text(
-                    "CANCEL",
-                    color = dynamicColor.copy(alpha = 0.5f),
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }, shape = RoundedCornerShape(24.dp), colors = DatePickerDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+            },
+            dismissButton = {
+                TextButton(onClick = { showPicker = !showPicker }) {
+                    Text(
+                        "CANCEL",
+                        color = dynamicColor.copy(alpha = 0.5f),
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            },
+            shape = RoundedCornerShape(24.dp),
+            colors = DatePickerDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
         ) {
             DatePicker(
-                state = datePickerState, colors = DatePickerDefaults.colors(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
                     todayContentColor = TealCyan,
                     todayDateBorderColor = TealCyan,
                     selectedDayContainerColor = TealCyan,
-                    selectedDayContentColor = Color.White
-                )
+                    selectedDayContentColor = Color.White,
+                ),
             )
         }
     }
@@ -347,7 +386,7 @@ fun CustomDatePickerField(
                 Icon(
                     imageVector = Icons.Rounded.CalendarMonth,
                     contentDescription = "Select Date",
-                    tint = dynamicColor.copy(alpha = 0.5f)
+                    tint = dynamicColor.copy(alpha = 0.5f),
                 )
             },
             colors = OutlinedTextFieldDefaults.colors(
@@ -358,18 +397,18 @@ fun CustomDatePickerField(
                 focusedBorderColor = TealCyan,
                 unfocusedBorderColor = dynamicColor.copy(alpha = 0.15f),
                 focusedLabelColor = TealCyan,
-                unfocusedLabelColor = dynamicColor.copy(alpha = 0.6f)
-            )
+                unfocusedLabelColor = dynamicColor.copy(alpha = 0.6f),
+            ),
         )
 
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .background(Color.Transparent)
-                .clickable { showPicker = !showPicker })
+                .clickable { showPicker = !showPicker },
+        )
     }
 }
-
 
 @Composable
 fun CustomTopBar(
@@ -378,9 +417,8 @@ fun CustomTopBar(
     subtitle: String? = null,
     subTitleSize: TextUnit = 10.sp,
     icon: ImageVector? = null,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
-
     val borderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
 
     Surface(
@@ -394,25 +432,25 @@ fun CustomTopBar(
                     color = borderColor,
                     start = Offset(0f, y),
                     end = Offset(size.width, y),
-                    strokeWidth = strokeWidth
+                    strokeWidth = strokeWidth,
                 )
-            }, color = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
+            },
+        color = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-
             Box(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(14.dp))
                     .background(TealCyan.copy(alpha = 0.1f))
                     .clickable { onBackClick() },
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBackIos,
@@ -420,7 +458,7 @@ fun CustomTopBar(
                     tint = TealCyan,
                     modifier = Modifier
                         .size(18.dp)
-                        .padding(end = 2.dp)
+                        .padding(end = 2.dp),
                 )
             }
 
@@ -428,10 +466,11 @@ fun CustomTopBar(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 8.dp),
             ) {
                 Text(
-                    text = title.uppercase(), style = TextStyle(
+                    text = title.uppercase(),
+                    style = TextStyle(
                         fontSize = 13.sp,
                         letterSpacing = 3.sp,
                         fontWeight = FontWeight.Black,
@@ -439,20 +478,25 @@ fun CustomTopBar(
                         shadow = Shadow(
                             color = TealCyan.copy(alpha = 0.2f),
                             offset = Offset(0f, 2f),
-                            blurRadius = 8f
-                        )
-                    ), maxLines = 1, overflow = TextOverflow.Ellipsis
+                            blurRadius = 8f,
+                        ),
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 if (subtitle != null) {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = subtitle.uppercase(), style = TextStyle(
+                        text = subtitle.uppercase(),
+                        style = TextStyle(
                             fontSize = subTitleSize,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        ), maxLines = 1, overflow = TextOverflow.Ellipsis
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
 
@@ -462,7 +506,7 @@ fun CustomTopBar(
                         .width(18.dp)
                         .height(2.dp)
                         .clip(CircleShape)
-                        .background(TealCyan)
+                        .background(TealCyan),
                 )
             }
 
@@ -471,7 +515,7 @@ fun CustomTopBar(
                     imageVector = icon,
                     contentDescription = null,
                     tint = TealCyan.copy(alpha = 0.4f),
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             } else {
                 Spacer(modifier = Modifier.size(44.dp))
@@ -480,7 +524,6 @@ fun CustomTopBar(
     }
 }
 
-
 @Composable
 fun Avatar(
     imageUrl: String?,
@@ -488,14 +531,15 @@ fun Avatar(
     name: String? = null,
     size: Dp = 44.dp,
     borderWidth: Dp = 1.dp,
-    borderColor: Color = TealCyan.copy(alpha = 0.5f)
+    borderColor: Color = TealCyan.copy(alpha = 0.5f),
 ) {
     Box(
         modifier = modifier
             .size(size)
             .clip(CircleShape)
             .background(TealCyan.copy(alpha = 0.1f))
-            .border(borderWidth, borderColor, CircleShape), contentAlignment = Alignment.Center
+            .border(borderWidth, borderColor, CircleShape),
+        contentAlignment = Alignment.Center,
     ) {
         if (!imageUrl.isNullOrBlank()) {
             AsyncImage(
@@ -504,34 +548,33 @@ fun Avatar(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(CircleShape),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
         } else if (!name.isNullOrBlank()) {
             Text(
-                text = name.take(1).uppercase(), style = TextStyle(
+                text = name.take(1).uppercase(),
+                style = TextStyle(
                     fontWeight = FontWeight.Black,
                     color = TealCyan,
-                    fontSize = (size.value * 0.4).sp
-                )
+                    fontSize = (size.value * 0.4).sp,
+                ),
             )
         } else {
             Icon(
                 imageVector = Icons.Rounded.Person,
                 contentDescription = null,
                 tint = TealCyan.copy(alpha = 0.5f),
-                modifier = Modifier.size(size * 0.6f)
+                modifier = Modifier.size(size * 0.6f),
             )
         }
     }
 }
 
-
 @Composable
-fun CustomErrorMessage(
-    message: String,
-) {
+fun CustomErrorMessage(message: String) {
     Box(
-        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = "SYSTEM ERROR: $message",
@@ -539,21 +582,22 @@ fun CustomErrorMessage(
             fontWeight = FontWeight.Black,
             letterSpacing = 1.sp,
             fontSize = 12.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
 
-
 @Composable
 fun HomeBarHeaders(
-    title: String, subtitle: String, topPadding: Dp, icon: ImageVector
-
+    title: String,
+    subtitle: String,
+    topPadding: Dp,
+    icon: ImageVector,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.98f),
-        shadowElevation = 8.dp
+        shadowElevation = 8.dp,
     ) {
         Row(
             modifier = Modifier
@@ -561,22 +605,24 @@ fun HomeBarHeaders(
                 .padding(horizontal = 24.dp, vertical = 20.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = title, style = MaterialTheme.typography.headlineMedium.copy(
+                    text = title,
+                    style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Black,
                         lineHeight = 32.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                        color = MaterialTheme.colorScheme.onSurface,
+                    ),
                 )
                 Text(
-                    text = subtitle, style = MaterialTheme.typography.labelSmall.copy(
+                    text = subtitle,
+                    style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 2.sp,
-                        color = TealCyan.copy(alpha = 0.7f)
-                    )
+                        color = TealCyan.copy(alpha = 0.7f),
+                    ),
                 )
             }
 
@@ -587,63 +633,18 @@ fun HomeBarHeaders(
                     .background(
                         Brush.linearGradient(
                             colors = listOf(
-                                TealCyan.copy(alpha = 0.2f), TealCyan.copy(alpha = 0.05f)
-                            )
-                        )
-                    ), contentAlignment = Alignment.Center
+                                TealCyan.copy(alpha = 0.2f),
+                                TealCyan.copy(alpha = 0.05f),
+                            ),
+                        ),
+                    ),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = "AI",
                     tint = TealCyan,
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-        }
-    }
-}
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TripStatusSwitch(
-    currentStatus: String?,
-    onStatusChange: (String) -> Unit
-) {
-    val options = listOf("upcoming", "active", "completed")
-    val selectedIndex = options.indexOf(currentStatus)
-    val dynamicColor = MaterialTheme.colorScheme.onSurface
-
-    SingleChoiceSegmentedButtonRow(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        options.forEachIndexed { index, status ->
-            SegmentedButton(
-                selected = selectedIndex == index,
-                onClick = { onStatusChange(status) },
-                shape = SegmentedButtonDefaults.itemShape(
-                    index = index,
-                    count = options.size
-                ),
-                colors = SegmentedButtonDefaults.colors(
-                    activeContainerColor = TealCyan.copy(alpha = 0.15f),
-                    activeContentColor = TealCyan,
-                    inactiveContainerColor = dynamicColor.copy(alpha = 0.02f),
-                    inactiveContentColor = dynamicColor.copy(alpha = 0.4f),
-                    activeBorderColor = TealCyan.copy(alpha = 0.5f),
-                    inactiveBorderColor = dynamicColor.copy(alpha = 0.1f)
-                ),
-                icon = {},
-            ) {
-                Text(
-                    text = status.uppercase(),
-                    style = TextStyle(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.sp
-                    )
+                    modifier = Modifier.size(32.dp),
                 )
             }
         }
@@ -652,13 +653,12 @@ fun TripStatusSwitch(
 
 
 fun formatTimeAgo(time: String?): String {
-
     if (time == null) return ""
 
     return try {
-
         val inputFormat = SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            Locale.getDefault(),
         )
         inputFormat.timeZone = getTimeZone("UTC")
 
@@ -666,7 +666,6 @@ fun formatTimeAgo(time: String?): String {
         val now = Date()
 
         val diff = now.time - date!!.time
-
         val minutes = diff / (1000 * 60)
         val hours = minutes / 60
 
@@ -676,35 +675,77 @@ fun formatTimeAgo(time: String?): String {
             hours < 24 -> "$hours hr ago"
             else -> "${hours / 24} days ago"
         }
-
     } catch (e: Exception) {
         ""
     }
 }
 
+fun formatDate(iso: String?): String {
+    if (iso == null) return ""
 
+    val parser = SimpleDateFormat(
+        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+        Locale.getDefault(),
+    )
 
-fun formatDate(iso:String?): String {
+    parser.timeZone = getTimeZone("UTC")
 
-    if(iso==null) return ""
-
-    val parser =
-        SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            Locale.getDefault()
-        )
-
-    parser.timeZone =
-        getTimeZone("UTC")
-
-    val date =
-        parser.parse(iso)
-
-    val formatter =
-        SimpleDateFormat(
-            "dd MMM yyyy",
-            Locale.getDefault()
-        )
+    val date = parser.parse(iso)
+    val formatter = SimpleDateFormat(
+        "dd MMM yyyy",
+        Locale.getDefault(),
+    )
 
     return formatter.format(date!!)
+}
+
+fun formatDayOfWeek(dateString: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat(
+            "yyyy-MM-dd",
+            Locale.getDefault(),
+        )
+        val outputFormat = SimpleDateFormat(
+            "EEE",
+            Locale.getDefault(),
+        )
+        val date = inputFormat.parse(dateString)
+        outputFormat.format(date!!).uppercase(Locale.getDefault())
+    } catch (e: Exception) {
+        dateString
+    }
+}
+
+@SuppressLint("NewApi")
+fun calculateEndDate(
+    start: String,
+    days: Int,
+): String {
+    val startDate = java.time.LocalDate.parse(start)
+
+    val endDate = startDate.plusDays(
+        (days - 1).toLong(),
+    )
+    return endDate.toString()
+}
+
+fun getTripDays(
+    start: String?,
+    end: String?,
+): Int {
+    if (start == null || end == null) return 1
+
+    val sdf = SimpleDateFormat(
+        "yyyy-MM-dd",
+        Locale.getDefault(),
+    )
+    val cleanStart = start.substring(0, 10)
+    val cleanEnd = end.substring(0, 10)
+
+    val startDate = sdf.parse(cleanStart)
+    val endDate = sdf.parse(cleanEnd)
+
+    val diff = endDate.time - startDate.time
+
+    return (diff / (1000 * 60 * 60 * 24)).toInt() + 1
 }

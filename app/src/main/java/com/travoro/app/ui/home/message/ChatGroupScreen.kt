@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -32,21 +31,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.Forum
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,16 +57,15 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.travoro.app.data.remote.dto.message.ChatGroup
 import com.travoro.app.ui.components.HomeBarHeaders
+import com.travoro.app.ui.components.formatDate
 import com.travoro.app.ui.home.homeNavigation.MessageScreenTab
-import com.travoro.app.ui.theme.ErrorRed
 import com.travoro.app.ui.theme.TealCyan
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatGroupScreen(
     navController: NavController,
-    viewModel: ChatGroupViewModel = hiltViewModel()
+    viewModel: ChatGroupViewModel = hiltViewModel(),
 ) {
     val groups by viewModel.groups.collectAsStateWithLifecycle()
     val infiniteTransition = rememberInfiniteTransition(label = "messenger_pulse")
@@ -81,91 +73,93 @@ fun ChatGroupScreen(
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
         targetValue = 2.15f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1300, easing = EaseInOutQuart),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "iconScale"
+        animationSpec =
+            infiniteRepeatable(
+                animation = tween(1300, easing = EaseInOutQuart),
+                repeatMode = RepeatMode.Reverse,
+            ),
+        label = "iconScale",
     )
 
-    LaunchedEffect(groups) {
-            viewModel.fetchGroups()
+    LaunchedEffect(Unit) {
+        viewModel.fetchGroups()
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
     ) {
-
         HomeBarHeaders(
-            title="Trip Messenger",
+            title = "Trip Messenger",
             subtitle = "SECURE COMMS PROTOCOL",
             icon = Icons.Default.Hub,
-            topPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+            topPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
         )
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                start = 10.dp,
-                end = 10.dp,
-                top = 16.dp,
-                bottom = 95.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(5.dp)
+            contentPadding =
+                PaddingValues(
+                    start = 10.dp,
+                    end = 10.dp,
+                    top = 16.dp,
+                    bottom = 95.dp,
+                ),
+            verticalArrangement = Arrangement.spacedBy(5.dp),
         ) {
-
-
             item {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 6.dp, vertical = 16.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 6.dp, vertical = 16.dp),
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-
                         Box(
-                            modifier = Modifier.graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            },
-                            contentAlignment = Alignment.Center
+                            modifier =
+                                Modifier.graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                },
+                            contentAlignment = Alignment.Center,
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Forum,
                                 contentDescription = null,
                                 tint = TealCyan.copy(alpha = 0.2f),
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(32.dp),
                             )
                             Icon(
                                 imageVector = Icons.Rounded.Forum,
                                 contentDescription = "Active Comms",
                                 tint = TealCyan,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(24.dp),
                             )
                         }
 
                         Spacer(Modifier.width(24.dp))
 
-
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text(
                                 text = "Trip ",
-                                style = MaterialTheme.typography.headlineMedium.copy(
-                                    fontWeight = FontWeight.ExtraLight,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                                )
+                                style =
+                                    MaterialTheme.typography.headlineMedium.copy(
+                                        fontWeight = FontWeight.ExtraLight,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                                    ),
                             )
                             Text(
                                 text = "Messenger.",
-                                style = MaterialTheme.typography.headlineMedium.copy(
-                                    fontWeight = FontWeight.Black,
-                                    color = TealCyan
-                                )
+                                style =
+                                    MaterialTheme.typography.headlineMedium.copy(
+                                        fontWeight = FontWeight.Black,
+                                        color = TealCyan,
+                                    ),
                             )
                         }
                     }
@@ -176,11 +170,10 @@ fun ChatGroupScreen(
                         text = "Vani Comms Protocol active. Select a node to coordinate your journey.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(horizontal = 6.dp)
+                        modifier = Modifier.padding(horizontal = 6.dp),
                     )
                 }
             }
-
 
             items(groups) { group ->
                 ChatGroupItem(
@@ -188,9 +181,6 @@ fun ChatGroupScreen(
                     onClick = {
                         navController.navigate(MessageScreenTab(group._id))
                     },
-                    onDeleteClick = {
-                        viewModel.deleteChatAndTrip(group.trip._id)
-                    }
                 )
             }
         }
@@ -201,64 +191,64 @@ fun ChatGroupScreen(
 fun ChatGroupItem(
     group: ChatGroup,
     onClick: () -> Unit,
-    onDeleteClick: () -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
-
     val dynamicColor = MaterialTheme.colorScheme.onSurface
 
     Surface(
-        modifier = Modifier
-            .padding(horizontal = 6.dp, vertical = 6.dp)
-            .fillMaxWidth()
-            .clickable { onClick() },
+        modifier =
+            Modifier
+                .padding(horizontal = 6.dp, vertical = 6.dp)
+                .fillMaxWidth()
+                .clickable { onClick() },
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
-        border = BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.09f)
-        ) // Subtle architectural edge
+        border =
+            BorderStroke(
+                1.dp,
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.09f),
+            ), // Subtle architectural edge
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-
             Box {
                 AsyncImage(
                     model = group.trip.coverImage,
                     contentDescription = null,
-                    modifier = Modifier
-                        .size(78.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .border(
-                            1.dp,
-                            TealCyan.copy(alpha = 0.2f),
-                            RoundedCornerShape(14.dp)
-                        ), // Neon rim
-                    contentScale = ContentScale.Crop
+                    modifier =
+                        Modifier
+                            .size(78.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .border(
+                                1.dp,
+                                TealCyan.copy(alpha = 0.2f),
+                                RoundedCornerShape(14.dp),
+                            ),
+                    // Neon rim
+                    contentScale = ContentScale.Crop,
                 )
-
             }
 
             Spacer(modifier = Modifier.width(14.dp))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             ) {
                 Text(
                     text = group.trip.title.uppercase(),
-                    style = TextStyle(
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 0.5.sp,
-                        color = dynamicColor
-                    ),
+                    style =
+                        TextStyle(
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 0.5.sp,
+                            color = dynamicColor,
+                        ),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -268,7 +258,7 @@ fun ChatGroupItem(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = null,
                         modifier = Modifier.size(12.dp),
-                        tint = TealCyan.copy(alpha = 0.7f)
+                        tint = TealCyan.copy(alpha = 0.7f),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
@@ -276,7 +266,7 @@ fun ChatGroupItem(
                         fontSize = 12.sp,
                         color = dynamicColor.copy(alpha = 0.6f),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
 
@@ -287,59 +277,22 @@ fun ChatGroupItem(
                     fontSize = 13.sp,
                     color = dynamicColor.copy(alpha = 0.4f),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-
 
             Column(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.height(78.dp)
+                modifier = Modifier.height(78.dp),
             ) {
                 Text(
-                    text = "09:42 PM",
+                    text = formatDate(group.updatedAt),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
-                    color = dynamicColor.copy(alpha = 0.3f)
+                    color = dynamicColor.copy(alpha = 0.3f),
                 )
-
-                Box {
-                    IconButton(
-                        onClick = { expanded = true },
-                        modifier = Modifier.offset(x = 12.dp, y = 12.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Options",
-                            tint = dynamicColor.copy(alpha = 0.5f)
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface.copy(alpha = 0.95f))
-                    ) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = "TERMINATE TRIP",
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 12.sp,
-                                    color = ErrorRed
-                                )
-                            },
-                            onClick = {
-                                expanded = false
-                                onDeleteClick()
-                            }
-                        )
-                    }
-                }
             }
         }
     }
 }
-

@@ -1,6 +1,5 @@
 package com.travoro.app.ui.auth.login
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.travoro.app.AppInitializer
@@ -18,31 +17,23 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     val travelApiService: TravelApiService,
     val session: Session,
-    val appInitializer: AppInitializer
+    val appInitializer: AppInitializer,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow<LoginEvent>(LoginEvent.Nothing)
     val uiState = _uiState.asStateFlow()
-
     private val _navigationEvent = MutableSharedFlow<LoginNavigation>()
     val navigationEvent = _navigationEvent.asSharedFlow()
-
     private val _forgotPasswordState =
         MutableStateFlow<ForgotPasswordState>(ForgotPasswordState.Idle)
     val forgotState = _forgotPasswordState.asStateFlow()
-
-
     private val _email = MutableStateFlow("")
     val email = _email.asStateFlow()
-
     private val _password = MutableStateFlow("")
     val password = _password.asStateFlow()
-
     private val _forgetEmail = MutableStateFlow("")
     val forgetEmail = _forgetEmail.asStateFlow()
 
@@ -58,7 +49,6 @@ class LoginViewModel @Inject constructor(
         _forgetEmail.value = email
     }
 
-
     fun onLoginButtonClick() {
         viewModelScope.launch {
             _uiState.emit(LoginEvent.Loading)
@@ -66,8 +56,8 @@ class LoginViewModel @Inject constructor(
                 travelApiService.login(
                     LoginRequest(
                         email = _email.value,
-                        password = _password.value
-                    )
+                        password = _password.value,
+                    ),
                 )
             }
             when (response) {
@@ -78,28 +68,23 @@ class LoginViewModel @Inject constructor(
                     appInitializer.initializeApp(viewModelScope)
                     _navigationEvent.emit(LoginNavigation.NavigationToHome)
                 }
-
                 is ApiResult.Error -> {
                     _uiState.emit(
                         LoginEvent.Error(
-                            response.message
-                        )
+                            response.message,
+                        ),
                     )
                 }
-
                 is ApiResult.Exception -> {
                     _uiState.emit(
                         LoginEvent.Error(
-                            response.message
-                        )
+                            response.message,
+                        ),
                     )
                 }
             }
-
         }
-
     }
-
 
     fun onForgetPasswordButtonClick() {
         if (_forgetEmail.value.isBlank()) {
@@ -111,8 +96,8 @@ class LoginViewModel @Inject constructor(
             val response = safeApiCall {
                 travelApiService.resetPassword(
                     ResetPasswordRequest(
-                        email = _forgetEmail.value
-                    )
+                        email = _forgetEmail.value,
+                    ),
                 )
             }
             when (response) {
@@ -122,18 +107,15 @@ class LoginViewModel @Inject constructor(
                 }
 
                 is ApiResult.Error -> {
-                    _forgotPasswordState.value =
-                        ForgotPasswordState.Error(response.message)
+                    _forgotPasswordState.value = ForgotPasswordState.Error(response.message)
                 }
 
                 else -> {
-                    _forgotPasswordState.value =
-                        ForgotPasswordState.Error("Something went wrong")
+                    _forgotPasswordState.value = ForgotPasswordState.Error("Something went wrong")
                 }
             }
         }
     }
-
 
     fun clearError() {
         _uiState.value = LoginEvent.Nothing
@@ -142,7 +124,6 @@ class LoginViewModel @Inject constructor(
     fun clearForgetPasswordState() {
         _forgotPasswordState.value = ForgotPasswordState.Idle
     }
-
 
     sealed class LoginNavigation {
         object NavigationToHome : LoginNavigation()
@@ -161,6 +142,4 @@ class LoginViewModel @Inject constructor(
         data class Error(val message: String) : LoginEvent()
         object Loading : LoginEvent()
     }
-
-
 }

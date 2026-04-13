@@ -1,6 +1,5 @@
 package com.travoro.app.ui.home.travelAI
 
-
 import androidx.compose.animation.core.EaseInOutQuart
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -54,13 +53,11 @@ import com.travoro.app.ui.theme.TealCyan
 import com.travoro.app.ui.theme.TealCyanLight
 import kotlinx.coroutines.flow.collectLatest
 
-
-
 @Composable
 fun TravelAITabScreen(
     paddingValues: PaddingValues,
     viewModel: TravelAiViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -76,9 +73,10 @@ fun TravelAITabScreen(
         viewModel.navigationEvent.collectLatest { event ->
             when (event) {
                 is TravelAiViewModel.TravelAiNavigation.NavigateToAddMembers -> {
-                    navController.navigate(AddMembersTab(event.tripId))
+                    navController.navigate(AddMembersTab(event.tripId, event.days))
                 }
-                is TravelAiViewModel.TravelAiNavigation.NavigateToHome-> {
+
+                is TravelAiViewModel.TravelAiNavigation.NavigateToHome -> {
                     navController.navigate(MyTripsTab)
                 }
             }
@@ -89,27 +87,77 @@ fun TravelAITabScreen(
     val showInput = !isLoading && uiState !is TravelAiViewModel.TravelAiEvent.Success
     val infiniteTransition = rememberInfiniteTransition(label = "ai_pulse")
     val scale by infiniteTransition.animateFloat(
-        initialValue = 1f, targetValue = 2.15f, animationSpec = infiniteRepeatable(
-            animation = tween(1300, easing = EaseInOutQuart), repeatMode = RepeatMode.Reverse
-        ), label = "iconScale"
+        initialValue = 1f,
+        targetValue = 2.15f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1300, easing = EaseInOutQuart),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "iconScale",
     )
-
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.background),
     ) {
-
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             HomeBarHeaders(
-                title="Travoro  AI",
+                title = "Travoro  AI",
                 subtitle = "INTELLIGENT TRIP ARCHITECT",
                 icon = Icons.Default.AutoAwesome,
-                topPadding = paddingValues.calculateTopPadding()
+                topPadding = paddingValues.calculateTopPadding(),
             )
+
+            if (uiState is TravelAiViewModel.TravelAiEvent.DateConflict) {
+                var newDate by remember {
+                    mutableStateOf("")
+                }
+
+                val tripData = (uiState as TravelAiViewModel.TravelAiEvent.DateConflict).tripData
+
+                AlertDialog(
+                    onDismissRequest = {},
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                viewModel.updateTripDate(
+                                    tripData,
+                                    newDate,
+                                )
+                            },
+                        ) {
+                            Text("SAVE")
+                        }
+                    },
+                    title = {
+                        Text(
+                            "Date Conflict",
+                        )
+                    },
+                    text = {
+                        Column {
+                            Text(
+                                "You already have trip on selected dates. Choose new start date.",
+                            )
+
+                            Spacer(
+                                Modifier.height(12.dp),
+                            )
+
+                            CustomDatePickerField(
+                                label = "NEW START DATE",
+                                selectedDate = newDate,
+                                onDateSelected = {
+                                    newDate = it
+                                },
+                            )
+                        }
+                    },
+                )
+            }
 
             if (isLoading) {
                 LinearProgressIndicator(
@@ -117,7 +165,7 @@ fun TravelAITabScreen(
                         .fillMaxWidth()
                         .height(2.dp),
                     color = TealCyan,
-                    trackColor = Color.Transparent
+                    trackColor = Color.Transparent,
                 )
             }
         }
@@ -130,41 +178,40 @@ fun TravelAITabScreen(
                     start = 10.dp,
                     end = 10.dp,
                     top = 24.dp,
-                    bottom = paddingValues.calculateBottomPadding() + if (showInput) 100.dp else 24.dp
+                    bottom = paddingValues.calculateBottomPadding() + if (showInput) 100.dp else 24.dp,
                 ),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp),
             ) {
                 item {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 16.dp)
+                            .padding(vertical = 16.dp),
                     ) {
-
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-
                             Box(
                                 modifier = Modifier.graphicsLayer {
                                     scaleX = scale
                                     scaleY = scale
-                                }, contentAlignment = Alignment.Center
+                                },
+                                contentAlignment = Alignment.Center,
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.AutoAwesome,
                                     contentDescription = null,
                                     tint = TealCyan.copy(alpha = 0.2f),
-                                    modifier = Modifier.size(32.dp)
+                                    modifier = Modifier.size(32.dp),
                                 )
                                 Icon(
                                     imageVector = Icons.Rounded.AutoAwesome,
                                     contentDescription = "AI Activation",
                                     tint = TealCyan,
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(24.dp),
                                 )
                             }
 
@@ -175,14 +222,15 @@ fun TravelAITabScreen(
                                     text = "Plan With ",
                                     style = MaterialTheme.typography.headlineMedium.copy(
                                         fontWeight = FontWeight.ExtraLight,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                                    )
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                                    ),
                                 )
                                 Text(
                                     text = "Vani.",
                                     style = MaterialTheme.typography.headlineMedium.copy(
-                                        fontWeight = FontWeight.Black, color = TealCyan
-                                    )
+                                        fontWeight = FontWeight.Black,
+                                        color = TealCyan,
+                                    ),
                                 )
                             }
                         }
@@ -190,18 +238,18 @@ fun TravelAITabScreen(
                         Spacer(Modifier.height(18.dp))
 
                         AiBubble(
-                            text = "I am the Travoro Architect. I’ve been designed to map out the most meaningful experiences for your journey. Where shall we begin?"
+                            text = "I am the Travoro Architect. I’ve been designed to map out the most meaningful experiences for your journey. Where shall we begin?",
                         )
                     }
                 }
-                items(messages, key = { it.hashCode() }) { message ->
+                items(messages, key = { it.id }) { message ->
                     ChatMessageItem(
                         message = message,
                         isLoading = isLoading,
                         onOptionClick = { viewModel.onOptionSelected(it) },
                         onAccept = {
                             viewModel.acceptTrip(it)
-                        }
+                        },
                     )
                 }
             }
@@ -212,22 +260,20 @@ fun TravelAITabScreen(
                 exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = paddingValues.calculateBottomPadding() + 12.dp)
+                    .padding(bottom = paddingValues.calculateBottomPadding() + 12.dp),
             ) {
                 CustomInputField(
                     onSend = { text ->
                         viewModel.onOptionSelected(text)
-                    })
+                    },
+                )
             }
         }
     }
 }
 
 @Composable
-fun CustomInputField(
-    onSend: (String) -> Unit
-) {
-
+fun CustomInputField(onSend: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
 
     Surface(
@@ -237,17 +283,18 @@ fun CustomInputField(
         shadowElevation = 8.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = 20.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 20.dp, end = 8.dp, top = 8.dp, bottom = 8.dp)
+            modifier = Modifier.padding(start = 20.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
         ) {
             BasicTextField(
                 value = text,
                 onValueChange = { text = it },
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Medium,
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(
@@ -256,19 +303,20 @@ fun CustomInputField(
                             onSend(text)
                             text = ""
                         }
-                    }),
+                    },
+                ),
                 modifier = Modifier.weight(1f),
                 decorationBox = { innerTextField ->
                     if (text.isEmpty()) {
                         Text(
                             text = "Give answer here...",
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                     }
                     innerTextField()
                 },
-                singleLine = true
+                singleLine = true,
             )
 
             IconButton(
@@ -281,44 +329,49 @@ fun CustomInputField(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(Brush.linearGradient(listOf(TealCyan, TealCyan.copy(alpha = 0.8f))))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                TealCyan,
+                                TealCyan.copy(alpha = 0.8f),
+                            ),
+                        ),
+                    ),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.Send,
                     contentDescription = "Send",
                     tint = Color.White,
-                    modifier = Modifier.size(25.dp)
+                    modifier = Modifier.size(25.dp),
                 )
             }
         }
     }
 }
 
-
-
-
-
 @Composable
 fun ChatMessageItem(
     message: AiChatMessage,
     isLoading: Boolean,
     onOptionClick: (String) -> Unit,
-    onAccept: (AiTripData) -> Unit
+    onAccept: (AiTripData) -> Unit,
 ) {
     val isUser = message.isUser
     val alignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart
 
     Box(
-        modifier = Modifier.fillMaxWidth(), contentAlignment = alignment
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = alignment,
     ) {
-
         Column(
             horizontalAlignment = if (isUser) Alignment.End else Alignment.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             when {
                 message.tripResult != null -> TripResultCard(
-                    message.tripResult, onAccept, isLoading
+                    message.tripResult,
+                    onAccept,
+                    isLoading,
                 )
 
                 isUser -> UserBubble(message.text ?: "")
@@ -330,27 +383,27 @@ fun ChatMessageItem(
 
             message.options?.let { optionsList ->
                 var selectedDate by remember { mutableStateOf("") }
-                if(optionsList.contains("Pick Date")){
+                if (optionsList.contains("Pick Date")) {
                     CustomDatePickerField(
                         onDateSelected = {
                             onOptionClick(it)
                         },
                         label = "Trip Start Date",
-                        selectedDate = selectedDate
+                        selectedDate = selectedDate,
                     )
-                }
-                else if (optionsList.isNotEmpty()) {
+                } else if (optionsList.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
                     @OptIn(ExperimentalLayoutApi::class) FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxWidth(0.95f)
+                        modifier = Modifier.fillMaxWidth(0.95f),
                     ) {
                         optionsList.forEach { option ->
                             SelectionButton(
                                 text = option,
                                 enabled = !isLoading,
-                                onClick = { onOptionClick(option) })
+                                onClick = { onOptionClick(option) },
+                            )
                         }
                     }
                 }
@@ -359,12 +412,11 @@ fun ChatMessageItem(
     }
 }
 
-
-
-
 @Composable
 fun SelectionButton(
-    text: String, enabled: Boolean, onClick: () -> Unit
+    text: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
 ) {
     val isPrimaryAction = text == "Regenerate Trip" || text == "Restart Trip"
 
@@ -380,22 +432,25 @@ fun SelectionButton(
                     } else {
                         listOf(
                             MaterialTheme.colorScheme.surface,
-                            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
                         )
-                    }
-                )
+                    },
+                ),
             )
             .clickable(enabled = enabled, onClick = onClick)
             .border(
-                width = 1.3.dp, brush = Brush.verticalGradient(
+                width = 1.3.dp,
+                brush = Brush.verticalGradient(
                     colors = listOf(
                         TealCyan.copy(alpha = 0.4f),
                         TealCyan.copy(alpha = 0.3f),
-                        TealCyan.copy(alpha = 0.4f)
-                    )
-                ), shape = RoundedCornerShape(24.dp)
+                        TealCyan.copy(alpha = 0.4f),
+                    ),
+                ),
+                shape = RoundedCornerShape(24.dp),
             )
-            .padding(horizontal = 18.dp, vertical = 12.dp), contentAlignment = Alignment.Center
+            .padding(horizontal = 18.dp, vertical = 12.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text.uppercase(),
@@ -403,23 +458,21 @@ fun SelectionButton(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.labelLarge.copy(
-                letterSpacing = 0.8.sp, fontSize = 11.sp
-            )
+                letterSpacing = 0.8.sp,
+                fontSize = 11.sp,
+            ),
         )
     }
 }
 
 @Composable
-fun AiBubble(
-    text: String
-) {
+fun AiBubble(text: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-
         Box(
             modifier = Modifier
                 .size(36.dp)
@@ -427,18 +480,19 @@ fun AiBubble(
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
-                            TealCyan.copy(alpha = 0.2f), TealCyan.copy(alpha = 0.1f)
-                        )
-                    )
+                            TealCyan.copy(alpha = 0.2f),
+                            TealCyan.copy(alpha = 0.1f),
+                        ),
+                    ),
                 )
                 .border(1.dp, TealCyan.copy(alpha = 0.1f), CircleShape),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = Icons.Rounded.SmartToy,
                 contentDescription = "AI Bot",
                 tint = TealCyan,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(20.dp),
             )
         }
 
@@ -446,31 +500,33 @@ fun AiBubble(
 
         Surface(
             shape = RoundedCornerShape(
-                18.dp, 18.dp, 18.dp, 2.dp
+                18.dp,
+                18.dp,
+                18.dp,
+                2.dp,
             ),
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f),
             border = BorderStroke(1.dp, TealCyan.copy(alpha = 0.25f)),
-            modifier = Modifier.widthIn(max = 280.dp)
+            modifier = Modifier.widthIn(max = 280.dp),
         ) {
             Text(
                 text = text,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 fontSize = 15.sp,
                 lineHeight = 22.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
             )
         }
     }
 }
 
-
 @Composable
-fun UserBubble(
-    text: String
-) {
-
+fun UserBubble(text: String) {
     val bubbleShape = RoundedCornerShape(
-        20.dp, 20.dp, 4.dp, 20.dp
+        20.dp,
+        20.dp,
+        4.dp,
+        20.dp,
     )
 
     Box(
@@ -481,80 +537,83 @@ fun UserBubble(
             .background(
                 Brush.linearGradient(
                     colors = listOf(
-                        TealCyanLight, TealCyan
-                    )
-                )
+                        TealCyanLight,
+                        TealCyan,
+                    ),
+                ),
             )
             .border(
-                width = 1.dp, brush = Brush.verticalGradient(
+                width = 1.dp,
+                brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color.White.copy(alpha = 0.5f), Color.White.copy(alpha = 0.0f)
-                    )
-                ), shape = bubbleShape
+                        Color.White.copy(alpha = 0.5f),
+                        Color.White.copy(alpha = 0.0f),
+                    ),
+                ),
+                shape = bubbleShape,
             )
-            .padding(horizontal = 18.dp, vertical = 14.dp)
+            .padding(horizontal = 18.dp, vertical = 14.dp),
     ) {
         Text(
-            text = text, style = MaterialTheme.typography.bodyLarge.copy(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge.copy(
                 fontSize = 15.sp,
                 lineHeight = 24.sp,
                 letterSpacing = 0.2.sp,
-                fontWeight = FontWeight.Medium
-            ), color = Color.White
+                fontWeight = FontWeight.Medium,
+            ),
+            color = Color.White,
         )
     }
 }
-
 
 @Composable
 fun StaticTypingBubble() {
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
         shape = RoundedCornerShape(20.dp, 20.dp, 20.dp, 4.dp),
-        modifier = Modifier.padding(vertical = 4.dp)
+        modifier = Modifier.padding(vertical = 4.dp),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 22.dp, vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             (0..2).forEach { _ ->
                 Box(
                     modifier = Modifier
                         .size(8.dp)
                         .clip(CircleShape)
-                        .background(TealCyan.copy(alpha = 0.4f))
+                        .background(TealCyan.copy(alpha = 0.4f)),
                 )
             }
         }
     }
 }
 
-
 @Composable
 fun TripResultCard(
     trip: AiTripData,
     onAccept: (AiTripData) -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)),
     ) {
         Column {
-
             Box(
                 modifier = Modifier
                     .height(320.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             ) {
                 AsyncImage(
                     model = trip.coverImage.ifEmpty { trip.images.firstOrNull() },
                     contentDescription = "Destination Cover",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
 
                 Box(
@@ -563,21 +622,21 @@ fun TripResultCard(
                         .background(
                             Brush.verticalGradient(
                                 colors = listOf(Color.Transparent, Color.Black.copy(0.95f)),
-                                startY = 150f
-                            )
-                        )
+                                startY = 150f,
+                            ),
+                        ),
                 )
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(24.dp)
+                        .padding(24.dp),
                 ) {
                     Text(
                         text = "VANI'S CHOICE • ${trip.destination.uppercase()}",
                         color = TealCyan,
                         fontWeight = FontWeight.Black,
                         letterSpacing = 1.sp,
-                        fontSize = 11.sp
+                        fontSize = 11.sp,
                     )
 
                     Text(
@@ -587,7 +646,7 @@ fun TripResultCard(
                         fontWeight = FontWeight.Black,
                         lineHeight = 34.sp,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
 
                     Spacer(Modifier.height(5.dp))
@@ -597,28 +656,30 @@ fun TripResultCard(
                         color = Color.White.copy(alpha = 0.8f),
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 3,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
 
             Column(
-                modifier = Modifier.padding(vertical = 24.dp)
+                modifier = Modifier.padding(vertical = 24.dp),
             ) {
-
                 Column(
                     modifier = Modifier.padding(horizontal = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         StaticBentoTile(
-                            Modifier.weight(1f), "Budget", "₹${trip.budget}", Icons.Default.Payments
+                            Modifier.weight(1f),
+                            "Budget",
+                            "₹${trip.budget}",
+                            Icons.Default.Payments,
                         )
                         StaticBentoTile(
                             Modifier.weight(1f),
                             "Duration",
                             "${trip.days} Days",
-                            Icons.Default.Timer
+                            Icons.Default.Timer,
                         )
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -626,21 +687,27 @@ fun TripResultCard(
                             Modifier.weight(1f),
                             "Season",
                             trip.bestTimeToVisit,
-                            Icons.Default.CalendarMonth
+                            Icons.Default.CalendarMonth,
                         )
                         StaticBentoTile(
-                            Modifier.weight(1f), "Style", trip.travelStyle, Icons.Default.Star
+                            Modifier.weight(1f),
+                            "Style",
+                            trip.travelStyle,
+                            Icons.Default.Star,
                         )
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         StaticBentoTile(
-                            Modifier.weight(1f), "Group", trip.groupType, Icons.Default.Group
+                            Modifier.weight(1f),
+                            "Group",
+                            trip.groupType,
+                            Icons.Default.Group,
                         )
                         StaticBentoTile(
                             Modifier.weight(1f),
                             "Transport",
                             trip.recommendedTransport,
-                            Icons.Default.DirectionsTransit
+                            Icons.Default.DirectionsTransit,
                         )
                     }
                 }
@@ -648,14 +715,13 @@ fun TripResultCard(
                 Spacer(Modifier.height(32.dp))
 
                 if (trip.images.isNotEmpty()) {
-
                     PaddingWrapper {
                         EditorialSectionHeader("Visual Preview", Icons.Default.Collections)
                     }
 
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 24.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         items(trip.images) { imageUrl ->
                             AsyncImage(
@@ -664,13 +730,12 @@ fun TripResultCard(
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(width = 150.dp, height = 200.dp)
-                                    .clip(RoundedCornerShape(16.dp))
+                                    .clip(RoundedCornerShape(16.dp)),
                             )
                         }
                     }
                     Spacer(Modifier.height(32.dp))
                 }
-
 
                 PaddingWrapper {
                     EditorialSectionHeader("Budget Breakdown", Icons.Default.AccountBalance)
@@ -679,25 +744,26 @@ fun TripResultCard(
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                     shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(
-                        1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.09f)
+                        1.dp,
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.09f),
                     ),
-                    modifier = Modifier.padding(horizontal = 24.dp)
+                    modifier = Modifier.padding(horizontal = 24.dp),
                 ) {
                     Column(
                         modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         BudgetRow(
                             "Transport",
                             trip.budgetBreakdown.transport,
-                            Icons.Default.DirectionsTransit
+                            Icons.Default.DirectionsTransit,
                         )
                         BudgetRow("Stays", trip.budgetBreakdown.accommodation, Icons.Default.Hotel)
                         BudgetRow("Food", trip.budgetBreakdown.food, Icons.Default.Restaurant)
                         BudgetRow(
                             "Activities",
                             trip.budgetBreakdown.activities,
-                            Icons.Default.LocalActivity
+                            Icons.Default.LocalActivity,
                         )
                     }
                 }
@@ -712,20 +778,19 @@ fun TripResultCard(
 
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     items(trip.hotels) { hotel ->
                         PlaceCard(
                             title = hotel.name,
                             subtitle = hotel.priceRange,
                             description = hotel.description,
-                            icon = Icons.Default.Hotel
+                            icon = Icons.Default.Hotel,
                         )
                     }
                 }
                 Spacer(Modifier.height(32.dp))
             }
-
 
             if (trip.restaurants.isNotEmpty()) {
                 PaddingWrapper {
@@ -734,20 +799,19 @@ fun TripResultCard(
 
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     items(trip.restaurants) { restaurant ->
                         PlaceCard(
                             title = restaurant.name,
                             subtitle = restaurant.specialty,
                             description = restaurant.location,
-                            icon = Icons.Default.RestaurantMenu
+                            icon = Icons.Default.RestaurantMenu,
                         )
                     }
                 }
                 Spacer(Modifier.height(32.dp))
             }
-
 
             if (trip.itinerary.isNotEmpty()) {
                 PaddingWrapper {
@@ -761,9 +825,6 @@ fun TripResultCard(
                 Spacer(Modifier.height(32.dp))
             }
 
-
-
-
             if (trip.travelTips.isNotEmpty()) {
                 PaddingWrapper {
                     EditorialSectionHeader("Pro Tips", Icons.Default.Lightbulb)
@@ -772,22 +833,22 @@ fun TripResultCard(
                     modifier = Modifier.padding(horizontal = 24.dp),
                     color = TealCyan.copy(alpha = 0.05f),
                     shape = RoundedCornerShape(20.dp),
-                    border = BorderStroke(1.dp, TealCyan.copy(alpha = 0.3f))
+                    border = BorderStroke(1.dp, TealCyan.copy(alpha = 0.3f)),
                 ) {
                     Column(
                         modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         trip.travelTips.forEach { tip ->
                             Row(
                                 verticalAlignment = Alignment.Top,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
                                 Icon(
                                     Icons.Default.CheckCircle,
                                     contentDescription = null,
                                     tint = TealCyan,
-                                    modifier = Modifier.size(18.dp)
+                                    modifier = Modifier.size(18.dp),
                                 )
                                 Spacer(Modifier.width(12.dp))
                                 Text(
@@ -795,7 +856,7 @@ fun TripResultCard(
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     lineHeight = 20.sp,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
                                 )
                             }
                         }
@@ -805,7 +866,6 @@ fun TripResultCard(
                 Spacer(Modifier.height(32.dp))
             }
 
-
             PaddingWrapper {
                 Box(
                     modifier = Modifier
@@ -814,19 +874,24 @@ fun TripResultCard(
                         .padding(bottom = 10.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .background(
-                            if (isLoading) SolidColor(TealCyan.copy(alpha = 0.5f))
-                            else Brush.horizontalGradient(
-                                listOf(
-                                    TealCyan, TealCyan.copy(alpha = 0.8f)
+                            if (isLoading) {
+                                SolidColor(TealCyan.copy(alpha = 0.5f))
+                            } else {
+                                Brush.horizontalGradient(
+                                    listOf(
+                                        TealCyan,
+                                        TealCyan.copy(alpha = 0.8f),
+                                    ),
                                 )
-                            )
+                            },
                         )
                         .clickable(enabled = !isLoading) { onAccept(trip) },
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
-                            color = Color.White, modifier = Modifier.size(24.dp)
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp),
                         )
                     } else {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -835,50 +900,49 @@ fun TripResultCard(
                                 fontWeight = FontWeight.Black,
                                 fontSize = 16.sp,
                                 color = Color.White,
-
                             )
                             Spacer(Modifier.width(8.dp))
                             Icon(
                                 Icons.Default.ArrowForward,
                                 contentDescription = null,
-                                tint = Color.White
+                                tint = Color.White,
                             )
-
                         }
                     }
                 }
             }
         }
-
     }
 }
 
-
 @Composable
-fun PaddingWrapper(
-    content: @Composable () -> Unit
-) {
+fun PaddingWrapper(content: @Composable () -> Unit) {
     Box(modifier = Modifier.padding(horizontal = 24.dp)) {
         content()
     }
 }
 
-
 @Composable
 fun EditorialSectionHeader(
-    title: String, icon: ImageVector
+    title: String,
+    icon: ImageVector,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(bottom = 16.dp),
     ) {
         Box(
             modifier = Modifier
                 .size(46.dp)
                 .clip(CircleShape)
-                .background(TealCyan.copy(alpha = 0.1f)), contentAlignment = Alignment.Center
+                .background(TealCyan.copy(alpha = 0.1f)),
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
-                icon, contentDescription = null, tint = TealCyan, modifier = Modifier.size(18.dp)
+                icon,
+                contentDescription = null,
+                tint = TealCyan,
+                modifier = Modifier.size(18.dp),
             )
         }
 
@@ -892,23 +956,25 @@ fun EditorialSectionHeader(
     }
 }
 
-
 @Composable
 fun StaticBentoTile(
-    modifier: Modifier = Modifier, label: String, value: String, icon: ImageVector
+    modifier: Modifier = Modifier,
+    label: String,
+    value: String,
+    icon: ImageVector,
 ) {
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.09f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.09f)),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = TealCyan,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(22.dp),
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -918,7 +984,7 @@ fun StaticBentoTile(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
 
             Text(
@@ -926,7 +992,7 @@ fun StaticBentoTile(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Black,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
@@ -934,16 +1000,19 @@ fun StaticBentoTile(
 
 @Composable
 fun BudgetRow(
-    category: String, amount: String, icon: ImageVector
+    category: String,
+    amount: String,
+    icon: ImageVector,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(18.dp),
         )
 
         Spacer(Modifier.width(12.dp))
@@ -952,17 +1021,22 @@ fun BudgetRow(
             category,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Medium,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         Text(
-            amount, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface
+            amount,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
 
 @Composable
 fun PlaceCard(
-    title: String, subtitle: String, description: String, icon: ImageVector
+    title: String,
+    subtitle: String,
+    description: String,
+    icon: ImageVector,
 ) {
     Surface(
         shape = RoundedCornerShape(20.dp),
@@ -970,25 +1044,26 @@ fun PlaceCard(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.09f)),
         modifier = Modifier
             .width(260.dp)
-            .wrapContentHeight()
+            .wrapContentHeight(),
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(20.dp),
         ) {
             Row(
-                verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Icon(
                     icon,
                     contentDescription = null,
                     tint = TealCyan,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
 
                 Spacer(Modifier.width(12.dp))
 
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 ) {
                     Text(
                         title,
@@ -996,7 +1071,7 @@ fun PlaceCard(
                         fontSize = 16.sp,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        lineHeight = 20.sp
+                        lineHeight = 20.sp,
                     )
                     Spacer(Modifier.height(2.dp))
                     Text(
@@ -1005,7 +1080,7 @@ fun PlaceCard(
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -1017,21 +1092,18 @@ fun PlaceCard(
                 fontSize = 13.sp,
                 maxLines = 4,
                 overflow = TextOverflow.Ellipsis,
-                lineHeight = 18.sp
+                lineHeight = 18.sp,
             )
         }
     }
 }
 
-
 @Composable
-fun StaticItineraryItem(
-    day: Itinerary
-) {
+fun StaticItineraryItem(day: Itinerary) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 15.dp, vertical = 12.dp)
+            .padding(horizontal = 15.dp, vertical = 12.dp),
     ) {
         Box(
             modifier = Modifier
@@ -1040,24 +1112,29 @@ fun StaticItineraryItem(
                 .background(
                     Brush.linearGradient(
                         listOf(
-                            TealCyan.copy(alpha = 0.2f), TealCyan.copy(alpha = 0.05f)
-                        )
-                    )
-                ), contentAlignment = Alignment.Center
+                            TealCyan.copy(alpha = 0.2f),
+                            TealCyan.copy(alpha = 0.05f),
+                        ),
+                    ),
+                ),
+            contentAlignment = Alignment.Center,
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     "DAY",
                     style = MaterialTheme.typography.labelSmall,
                     color = TealCyan,
                     fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    "${day.day}", color = TealCyan, fontWeight = FontWeight.Black, fontSize = 16.sp
+                    "${day.day}",
+                    color = TealCyan,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 16.sp,
                 )
             }
         }
@@ -1065,19 +1142,19 @@ fun StaticItineraryItem(
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         ) {
             Text(
                 text = "Day ${day.day} Highlights",
                 fontWeight = FontWeight.ExtraBold,
-                color = TealCyan
+                color = TealCyan,
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = day.plan,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                lineHeight = 22.sp
+                lineHeight = 22.sp,
             )
         }
     }

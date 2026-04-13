@@ -12,50 +12,50 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
-class NotificationViewModel @Inject constructor(
-    private val travelApiService: TravelApiService
-) : ViewModel() {
+class NotificationViewModel
+    @Inject
+    constructor(
+        private val travelApiService: TravelApiService,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow<NotificationState>(NotificationState.Idle)
+        val uiState = _uiState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<NotificationState>(NotificationState.Idle)
-    val uiState = _uiState.asStateFlow()
+        private val _suggestions = MutableStateFlow<List<Data>>(emptyList())
+        val suggestions = _suggestions.asStateFlow()
 
-    private val _suggestions = MutableStateFlow<List<Data>>(emptyList())
-    val suggestions = _suggestions.asStateFlow()
+        fun fetchNotification() {
+            viewModelScope.launch {
+                _uiState.value = NotificationState.Loading
+                val response =
+                    safeApiCall {
+                        travelApiService.getAllSuggestions()
+                    }
+                when (response) {
+                    is ApiResult.Success -> {
+                        val list = response.data.data?.filterNotNull() ?: emptyList()
+                        _suggestions.value = list
+                        _uiState.value = NotificationState.Success(list)
+                    }
 
-    fun fetchNotification() {
-        viewModelScope.launch {
-            _uiState.value = NotificationState.Loading
-            val response = safeApiCall {
-                travelApiService.getAllSuggestions()
+                    is ApiResult.Error -> {
+                        _uiState.value = NotificationState.Error(response.message)
+                    }
+
+                    is ApiResult.Exception -> {
+                        _uiState.value = NotificationState.Error(response.message)
+                    }
+                }
             }
-            when (response) {
-                is ApiResult.Success -> {
-                    val list = response.data.data?.filterNotNull() ?: emptyList()
-                    _suggestions.value = list
-                    _uiState.value = NotificationState.Success(list)
+        }
 
-                }
+        sealed class NotificationState {
+            object Idle : NotificationState()
 
-                is ApiResult.Error -> {
-                    _uiState.value = NotificationState.Error(response.message)
-                }
+            object Loading : NotificationState()
 
-                is ApiResult.Exception -> {
-                    _uiState.value = NotificationState.Error(response.message)
-                }
-            }
+            data class Success(val suggestions: List<Data>) : NotificationState()
 
+            data class Error(val message: String) : NotificationState()
         }
     }
-
-
-    sealed class NotificationState {
-        object Idle : NotificationState()
-        object Loading : NotificationState()
-        data class Success(val suggestions: List<Data>) : NotificationState()
-        data class Error(val message: String) : NotificationState()
-    }
-
-}

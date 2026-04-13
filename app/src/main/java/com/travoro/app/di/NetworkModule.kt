@@ -1,7 +1,7 @@
 package com.travoro.app.di
 
-import com.travoro.app.data.remote.api.TravelApiService
 import com.travoro.app.data.remote.Interceptor.AuthInterceptor
+import com.travoro.app.data.remote.api.TravelApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,11 +13,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
-
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
     @Provides
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor =
@@ -25,23 +23,19 @@ object NetworkModule {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
-
     @Provides
     @Singleton
-    fun provideAuthInterceptor(
-        session: Session
-    ): AuthInterceptor {
+    fun provideAuthInterceptor(session: Session): AuthInterceptor {
         return AuthInterceptor {
             session.getToken()
         }
     }
 
-
     @Provides
     @Singleton
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
-        authInterceptor: AuthInterceptor
+        authInterceptor: AuthInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
@@ -52,32 +46,21 @@ object NetworkModule {
             .build()
     }
 
-
     @Provides
     @Singleton
-    fun provideRetrofit(
-        client: OkHttpClient
-    ): Retrofit {
+    fun provideRetrofit(client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://travelappbackend-ayig.onrender.com/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
     }
-
 
     @Provides
     @Singleton
-    fun provideTravelApiService(
-        retrofit: Retrofit
-    ): TravelApiService {
+    fun provideTravelApiService(retrofit: Retrofit): TravelApiService {
         return retrofit.create(TravelApiService::class.java)
     }
-
 }
 
-
 // https://travelappbackend-ayig.onrender.com
-
-

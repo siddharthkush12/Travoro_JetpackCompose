@@ -43,7 +43,7 @@ fun MessageScreen(
     userId: String,
     viewModel: MessageViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
-    session: Session
+    session: Session,
 ) {
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val text by viewModel.text.collectAsStateWithLifecycle()
@@ -63,68 +63,82 @@ fun MessageScreen(
         }
     }
 
-
-
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.9f))) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.9f)),
+    ) {
         CustomTopBar(
             modifier = Modifier.fillMaxWidth(),
             title = "SECURE COMMS",
             icon = Icons.Rounded.Forum,
-            onBackClick = onClickBack
+            onBackClick = onClickBack,
         )
 
         LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 16.dp),
             state = listState,
             contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             items(messages) { message ->
                 MessageBubble(
-                    message = message, isMine = message.sender._id == userId, session = session
+                    message = message,
+                    isMine = message.sender._id == userId,
+                    session = session,
                 )
             }
         }
 
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .drawBehind {
-                drawLine(
-                    brush = Brush.horizontalGradient(
-                        listOf(
-                            Color.Transparent, TealCyan.copy(alpha = 0.3f), Color.Transparent
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .drawBehind {
+                        drawLine(
+                            brush =
+                                Brush.horizontalGradient(
+                                    listOf(
+                                        Color.Transparent,
+                                        TealCyan.copy(alpha = 0.3f),
+                                        Color.Transparent,
+                                    ),
+                                ),
+                            start = Offset(0f, 0f),
+                            end = Offset(size.width, 0f),
+                            strokeWidth = 1.dp.toPx(),
                         )
-                    ),
-                    start = Offset(0f, 0f),
-                    end = Offset(size.width, 0f),
-                    strokeWidth = 1.dp.toPx()
-                )
-            }
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
-            .navigationBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 12.dp)) {
+                    }
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+                    .navigationBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+        ) {
             Row(
-                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box {
                     IconButton(
                         onClick = { showAttachmentMenu = true },
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(dynamicColor.copy(alpha = 0.03f))
-                            .border(
-                                1.dp, dynamicColor.copy(alpha = 0.08f), RoundedCornerShape(16.dp)
-                            )
+                        modifier =
+                            Modifier
+                                .size(50.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(dynamicColor.copy(alpha = 0.03f))
+                                .border(
+                                    1.dp,
+                                    dynamicColor.copy(alpha = 0.08f),
+                                    RoundedCornerShape(16.dp),
+                                ),
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Add,
                             contentDescription = null,
-                            tint = TealCyan
+                            tint = TealCyan,
                         )
                     }
 
@@ -132,32 +146,37 @@ fun MessageScreen(
                         expanded = showAttachmentMenu,
                         onDismissRequest = { showAttachmentMenu = false },
                         shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.98f))
-                            .border(1.dp, TealCyan.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+                        modifier =
+                            Modifier
+                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.98f))
+                                .border(1.dp, TealCyan.copy(alpha = 0.2f), RoundedCornerShape(16.dp)),
                     ) {
                         DropdownMenuItem(leadingIcon = {
                             Icon(
-                                Icons.Rounded.Image, contentDescription = null, tint = TealCyan
+                                Icons.Rounded.Image,
+                                contentDescription = null,
+                                tint = TealCyan,
                             )
                         }, text = {
                             Text(
                                 "IMAGE PAYLOAD",
                                 fontWeight = FontWeight.Black,
                                 fontSize = 11.sp,
-                                letterSpacing = 1.sp
+                                letterSpacing = 1.sp,
                             )
                         }, onClick = { showAttachmentMenu = false })
                         DropdownMenuItem(leadingIcon = {
                             Icon(
-                                Icons.Rounded.Videocam, contentDescription = null, tint = TealCyan
+                                Icons.Rounded.Videocam,
+                                contentDescription = null,
+                                tint = TealCyan,
                             )
                         }, text = {
                             Text(
                                 "VIDEO FEED",
                                 fontWeight = FontWeight.Black,
                                 fontSize = 11.sp,
-                                letterSpacing = 1.sp
+                                letterSpacing = 1.sp,
                             )
                         }, onClick = { showAttachmentMenu = false })
                     }
@@ -174,20 +193,21 @@ fun MessageScreen(
                             "Awaiting input...",
                             color = dynamicColor.copy(alpha = 0.3f),
                             fontSize = 14.sp,
-                            letterSpacing = 0.5.sp
+                            letterSpacing = 0.5.sp,
                         )
                     },
                     shape = RoundedCornerShape(20.dp),
                     maxLines = 4,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = dynamicColor,
-                        unfocusedTextColor = dynamicColor.copy(alpha = 0.9f),
-                        focusedContainerColor = dynamicColor.copy(alpha = 0.03f),
-                        unfocusedContainerColor = dynamicColor.copy(alpha = 0.01f),
-                        focusedBorderColor = TealCyan.copy(alpha = 0.8f),
-                        unfocusedBorderColor = dynamicColor.copy(alpha = 0.1f),
-                        cursorColor = TealCyan
-                    )
+                    colors =
+                        OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = dynamicColor,
+                            unfocusedTextColor = dynamicColor.copy(alpha = 0.9f),
+                            focusedContainerColor = dynamicColor.copy(alpha = 0.03f),
+                            unfocusedContainerColor = dynamicColor.copy(alpha = 0.01f),
+                            focusedBorderColor = TealCyan.copy(alpha = 0.8f),
+                            unfocusedBorderColor = dynamicColor.copy(alpha = 0.1f),
+                            cursorColor = TealCyan,
+                        ),
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
@@ -196,18 +216,21 @@ fun MessageScreen(
                     onClick = { if (text.isNotBlank()) viewModel.sendMessage(groupId, userId) },
                     containerColor = TealCyan,
                     shape = RoundedCornerShape(16.dp),
-                    elevation = FloatingActionButtonDefaults.elevation(
-                        defaultElevation = 0.dp, pressedElevation = 0.dp
-                    ),
-                    modifier = Modifier
-                        .size(50.dp)
-                        .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+                    elevation =
+                        FloatingActionButtonDefaults.elevation(
+                            defaultElevation = 0.dp,
+                            pressedElevation = 0.dp,
+                        ),
+                    modifier =
+                        Modifier
+                            .size(50.dp)
+                            .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(16.dp)),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Send,
                         contentDescription = null,
                         tint = Color.White,
-                        modifier = Modifier.offset(x = 2.dp)
+                        modifier = Modifier.offset(x = 2.dp),
                     )
                 }
             }
@@ -217,42 +240,46 @@ fun MessageScreen(
 
 @Composable
 fun MessageBubble(
-    message: Message, isMine: Boolean, session: Session
+    message: Message,
+    isMine: Boolean,
+    session: Session,
 ) {
     val dynamicColor = MaterialTheme.colorScheme.onSurface
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (isMine) Arrangement.End else Arrangement.Start,
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.Bottom,
     ) {
         if (!isMine) {
             AsyncImage(
                 model = message.sender.profilePic,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .border(1.dp, dynamicColor.copy(alpha = 0.1f), RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop
+                modifier =
+                    Modifier
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .border(1.dp, dynamicColor.copy(alpha = 0.1f), RoundedCornerShape(10.dp)),
+                contentScale = ContentScale.Crop,
             )
             Spacer(modifier = Modifier.width(12.dp))
         }
 
         Column(
             horizontalAlignment = if (isMine) Alignment.End else Alignment.Start,
-            modifier = Modifier.weight(1f, fill = false)
+            modifier = Modifier.weight(1f, fill = false),
         ) {
             if (!isMine) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(start = 2.dp, bottom = 6.dp)
+                    modifier = Modifier.padding(start = 2.dp, bottom = 6.dp),
                 ) {
                     Box(
-                        modifier = Modifier
-                            .size(4.dp)
-                            .clip(CircleShape)
-                            .background(TealCyan)
+                        modifier =
+                            Modifier
+                                .size(4.dp)
+                                .clip(CircleShape)
+                                .background(TealCyan),
                     )
                     Spacer(modifier = Modifier.width(1.dp))
                     Text(
@@ -260,40 +287,63 @@ fun MessageBubble(
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Black,
                         letterSpacing = 1.sp,
-                        color = TealCyan.copy(alpha = 0.8f)
+                        color = TealCyan.copy(alpha = 0.8f),
                     )
                 }
             }
 
             Surface(
-                shape = RoundedCornerShape(
-                    topStart = 20.dp,
-                    topEnd = 20.dp,
-                    bottomStart = if (isMine) 20.dp else 2.dp,
-                    bottomEnd = if (isMine) 2.dp else 20.dp
-                ),
-                color = if (isMine) Color.Transparent else MaterialTheme.colorScheme.surface.copy(
-                    alpha = 0.5f
-                ),
-                border = if (isMine) null else BorderStroke(
-                    width = 1.dp, brush = Brush.verticalGradient(
-                        listOf(
-                            TealCyan.copy(alpha = 0.4f), Color.Transparent
+                shape =
+                    RoundedCornerShape(
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
+                        bottomStart = if (isMine) 20.dp else 2.dp,
+                        bottomEnd = if (isMine) 2.dp else 20.dp,
+                    ),
+                color =
+                    if (isMine) {
+                        Color.Transparent
+                    } else {
+                        MaterialTheme.colorScheme.surface.copy(
+                            alpha = 0.5f,
                         )
-                    )
-                ),
-                modifier = if (isMine) {
-                    Modifier.background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(TealCyan, Color(0xFF00B4D8))
-                        ), shape = RoundedCornerShape(
-                            topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 2.dp
+                    },
+                border =
+                    if (isMine) {
+                        null
+                    } else {
+                        BorderStroke(
+                            width = 1.dp,
+                            brush =
+                                Brush.verticalGradient(
+                                    listOf(
+                                        TealCyan.copy(alpha = 0.4f),
+                                        Color.Transparent,
+                                    ),
+                                ),
                         )
-                    )
-                } else Modifier
+                    },
+                modifier =
+                    if (isMine) {
+                        Modifier.background(
+                            brush =
+                                Brush.linearGradient(
+                                    colors = listOf(TealCyan, Color(0xFF00B4D8)),
+                                ),
+                            shape =
+                                RoundedCornerShape(
+                                    topStart = 20.dp,
+                                    topEnd = 20.dp,
+                                    bottomStart = 20.dp,
+                                    bottomEnd = 2.dp,
+                                ),
+                        )
+                    } else {
+                        Modifier
+                    },
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp)
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
                 ) {
                     when (message.type) {
                         "text" -> {
@@ -302,42 +352,48 @@ fun MessageBubble(
                                 color = if (isMine) Color.White else dynamicColor.copy(alpha = 0.9f),
                                 fontSize = 14.sp,
                                 lineHeight = 22.sp,
-                                fontWeight = FontWeight.Medium
+                                fontWeight = FontWeight.Medium,
                             )
                         }
 
                         "image" -> {
                             Box(
-                                modifier = Modifier.border(
-                                    1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(12.dp)
-                                )
+                                modifier =
+                                    Modifier.border(
+                                        1.dp,
+                                        Color.White.copy(alpha = 0.2f),
+                                        RoundedCornerShape(12.dp),
+                                    ),
                             ) {
                                 AsyncImage(
                                     model = message.mediaUrl,
                                     contentDescription = null,
-                                    modifier = Modifier
-                                        .size(220.dp)
-                                        .clip(RoundedCornerShape(12.dp)),
-                                    contentScale = ContentScale.Crop
+                                    modifier =
+                                        Modifier
+                                            .size(220.dp)
+                                            .clip(RoundedCornerShape(12.dp)),
+                                    contentScale = ContentScale.Crop,
                                 )
                             }
                         }
 
-                        "video" -> Text(
-                            ">> DECRYPTING VIDEO FEED",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp,
-                            color = if (isMine) Color.White else TealCyan
-                        )
+                        "video" ->
+                            Text(
+                                ">> DECRYPTING VIDEO FEED",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp,
+                                color = if (isMine) Color.White else TealCyan,
+                            )
 
-                        "file" -> Text(
-                            ">> ENCRYPTED PAYLOAD ATTACHED",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp,
-                            color = if (isMine) Color.White else TealCyan
-                        )
+                        "file" ->
+                            Text(
+                                ">> ENCRYPTED PAYLOAD ATTACHED",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp,
+                                color = if (isMine) Color.White else TealCyan,
+                            )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -347,10 +403,15 @@ fun MessageBubble(
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Black,
                         letterSpacing = 1.sp,
-                        color = if (isMine) Color.White.copy(alpha = 0.7f) else dynamicColor.copy(
-                            alpha = 0.3f
-                        ),
-                        modifier = Modifier.align(if (isMine) Alignment.End else Alignment.Start)
+                        color =
+                            if (isMine) {
+                                Color.White.copy(alpha = 0.7f)
+                            } else {
+                                dynamicColor.copy(
+                                    alpha = 0.3f,
+                                )
+                            },
+                        modifier = Modifier.align(if (isMine) Alignment.End else Alignment.Start),
                     )
                 }
             }
@@ -361,11 +422,12 @@ fun MessageBubble(
             AsyncImage(
                 model = session.getProfileImage(),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .border(1.dp, TealCyan.copy(alpha = 0.6f), RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop
+                modifier =
+                    Modifier
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .border(1.dp, TealCyan.copy(alpha = 0.6f), RoundedCornerShape(10.dp)),
+                contentScale = ContentScale.Crop,
             )
         }
     }

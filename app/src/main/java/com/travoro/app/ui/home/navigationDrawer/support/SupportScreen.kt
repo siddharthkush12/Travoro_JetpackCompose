@@ -42,12 +42,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.travoro.app.ui.components.CustomTopBar
 import com.travoro.app.ui.home.profile.ProfileViewModel
 import com.travoro.app.ui.theme.TealCyan
-import androidx.core.net.toUri
 
 @Composable
 fun SupportScreen(
@@ -61,48 +61,48 @@ fun SupportScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.background),
     ) {
-
         CustomTopBar(
             title = "SYSTEM SUPPORT",
             icon = Icons.Rounded.SupportAgent,
-            onBackClick = { navController.popBackStack() }
+            onBackClick = { navController.popBackStack() },
         )
 
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 shape = RoundedCornerShape(28.dp),
                 color = MaterialTheme.colorScheme.surface,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.02f)),
-                shadowElevation = 1.dp
+                border = BorderStroke(
+                    1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.02f)
+                ),
+                shadowElevation = 1.dp,
             ) {
                 Row(
                     modifier = Modifier.padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "HI ${profile?.fullname?.uppercase()},",
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Black,
-                                letterSpacing = 1.sp
-                            )
+                                letterSpacing = 1.sp,
+                            ),
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = "Vani is ready to assist. Select a protocol below to begin resolution.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
 
@@ -111,51 +111,50 @@ fun SupportScreen(
                             .size(50.dp)
                             .clip(CircleShape)
                             .background(TealCyan.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.HeadsetMic,
                             contentDescription = null,
                             tint = TealCyan,
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier.size(28.dp),
                         )
                     }
                 }
             }
 
-
             SupportCard(
                 title = "DIRECT VOICE LINE",
-                subtitle = "Protocol: Real-time human assistance"
+                subtitle = "Protocol: Real-time human assistance",
             ) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     color = TealCyan.copy(alpha = 0.05f),
-                    border = BorderStroke(1.dp, TealCyan.copy(alpha = 0.1f))
+                    border = BorderStroke(1.dp, TealCyan.copy(alpha = 0.1f)),
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Rounded.PhoneInTalk,
                                 contentDescription = null,
                                 tint = TealCyan,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(24.dp),
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
                                     text = "+91 7380339254",
-                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                                 )
                                 Text(
                                     text = "09:00 - 20:00 IST",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                         }
@@ -169,7 +168,7 @@ fun SupportScreen(
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
                             shape = RoundedCornerShape(12.dp),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
                         ) {
                             Text("CONNECT", fontWeight = FontWeight.Black, fontSize = 12.sp)
                         }
@@ -177,10 +176,9 @@ fun SupportScreen(
                 }
             }
 
-
             SupportCard(
                 title = "MESSAGE ENCRYPTION",
-                subtitle = "Direct encrypted dispatch to Vani's team"
+                subtitle = "Direct encrypted dispatch to Vani's team",
             ) {
                 androidx.compose.material3.OutlinedTextField(
                     value = message,
@@ -195,17 +193,19 @@ fun SupportScreen(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = TealCyan,
                         unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-                        focusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
-                    )
+                        focusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
+                    ),
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = { /* API Call */ },
-                    modifier = Modifier.fillMaxWidth().height(54.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
                 ) {
                     Text("DISPATCH MESSAGE", fontWeight = FontWeight.Black, letterSpacing = 1.sp)
                 }
@@ -218,7 +218,7 @@ fun SupportScreen(
 fun SupportCard(
     title: String,
     subtitle: String,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -227,23 +227,23 @@ fun SupportCard(
         shape = RoundedCornerShape(28.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.09f)),
-        shadowElevation = 2.dp
-    ){
+        shadowElevation = 2.dp,
+    ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(20.dp),
         ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelLarge.copy(
                     fontWeight = FontWeight.Black,
                     letterSpacing = 2.sp,
-                    color = TealCyan
-                )
+                    color = TealCyan,
+                ),
             )
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             )
 
             Spacer(modifier = Modifier.height(20.dp))

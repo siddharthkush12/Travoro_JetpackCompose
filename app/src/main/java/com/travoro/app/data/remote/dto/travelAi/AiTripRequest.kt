@@ -6,5 +6,5 @@ data class AiTripRequest(
     val travelStyle: String,
     val groupType: String,
     val currentCity: String,
-    val startDate:String
+    val startDate: String,
 )

@@ -1,6 +1,5 @@
 package com.travoro.app.ui.home.features.billSplit
 
-
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,7 +34,6 @@ import coil.compose.AsyncImage
 import com.travoro.app.data.remote.dto.trips.TripDto
 import com.travoro.app.ui.components.CustomErrorMessage
 import com.travoro.app.ui.components.CustomTopBar
-
 import com.travoro.app.ui.home.mytrips.MyTripsViewModel
 import com.travoro.app.ui.theme.TealCyan
 
@@ -43,7 +41,7 @@ import com.travoro.app.ui.theme.TealCyan
 fun BillSplitScreen(
     onTripClick: (TripDto) -> Unit,
     homeNavController: NavController,
-    viewModel: MyTripsViewModel = hiltViewModel()
+    viewModel: MyTripsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val dynamicColor = MaterialTheme.colorScheme.onSurface
@@ -52,23 +50,20 @@ fun BillSplitScreen(
         viewModel.fetchMyTrips()
     }
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-
+            .background(MaterialTheme.colorScheme.background),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
-
             CustomTopBar(
                 title = "FINANCIAL LEDGER",
                 subtitle = "SELECT A JOURNEY TO INITIATE BILL SPLIT PROTOCOL",
                 icon = Icons.AutoMirrored.Rounded.ReceiptLong,
                 onBackClick = { homeNavController.popBackStack() },
-                subTitleSize = 11.sp
+                subTitleSize = 11.sp,
             )
             Spacer(modifier = Modifier.size(10.dp))
 
@@ -76,7 +71,7 @@ fun BillSplitScreen(
                 is MyTripsViewModel.MyTripsState.Loading -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         SyncingLedgerPlaceholder()
                     }
@@ -87,28 +82,28 @@ fun BillSplitScreen(
                     if (trips.isEmpty()) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 "NO ACTIVE JOURNEYS FOUND",
                                 color = dynamicColor.copy(alpha = 0.4f),
                                 letterSpacing = 2.sp,
                                 fontSize = 12.sp,
-                                fontWeight = FontWeight.Black
+                                fontWeight = FontWeight.Black,
                             )
                         }
                     } else {
                         TripsList(
                             trips = trips,
                             onTripClick = onTripClick,
-                            dynamicColor = dynamicColor
+                            dynamicColor = dynamicColor,
                         )
                     }
                 }
 
                 is MyTripsViewModel.MyTripsState.Error -> {
                     CustomErrorMessage(
-                        message = (uiState as MyTripsViewModel.MyTripsState.Error).message.uppercase()
+                        message = (uiState as MyTripsViewModel.MyTripsState.Error).message.uppercase(),
                     )
                 }
 
@@ -118,36 +113,34 @@ fun BillSplitScreen(
     }
 }
 
-
 @Composable
 private fun TripsList(
     trips: List<TripDto>,
     onTripClick: (TripDto) -> Unit,
-    dynamicColor: Color
+    dynamicColor: Color,
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(bottom = 100.dp)
+        contentPadding = PaddingValues(bottom = 100.dp),
     ) {
         items(trips) { trip ->
             FinancialTripCard(
                 trip = trip,
                 onClick = { onTripClick(trip) },
-                dynamicColor = dynamicColor
+                dynamicColor = dynamicColor,
             )
         }
     }
 }
 
-
 @Composable
 private fun FinancialTripCard(
     trip: TripDto,
     onClick: () -> Unit,
-    dynamicColor: Color
+    dynamicColor: Color,
 ) {
     Surface(
         modifier = Modifier
@@ -156,34 +149,32 @@ private fun FinancialTripCard(
             .clickable { onClick() },
         color = dynamicColor.copy(alpha = 0.03f),
         border = BorderStroke(1.dp, dynamicColor.copy(alpha = 0.08f)),
-        shape = RoundedCornerShape(24.dp)
+        shape = RoundedCornerShape(24.dp),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-
             Box(
                 modifier = Modifier
                     .size(72.dp)
                     .clip(RoundedCornerShape(18.dp))
-                    .border(1.dp, TealCyan.copy(alpha = 0.3f), RoundedCornerShape(18.dp))
+                    .border(1.dp, TealCyan.copy(alpha = 0.3f), RoundedCornerShape(18.dp)),
             ) {
                 AsyncImage(
                     model = trip.coverImage,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.2f))
+                        .background(Color.Black.copy(alpha = 0.2f)),
                 )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
-
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -191,11 +182,11 @@ private fun FinancialTripCard(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Black,
-                        letterSpacing = 1.sp
+                        letterSpacing = 1.sp,
                     ),
                     color = dynamicColor.copy(alpha = 0.9f),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -205,7 +196,7 @@ private fun FinancialTripCard(
                         Icons.Default.LocationOn,
                         contentDescription = null,
                         tint = dynamicColor.copy(alpha = 0.4f),
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(12.dp),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
@@ -213,19 +204,18 @@ private fun FinancialTripCard(
                         style = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.Bold),
                         color = dynamicColor.copy(alpha = 0.5f),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
-
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Rounded.Group,
                         contentDescription = null,
                         tint = TealCyan,
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(12.dp),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
@@ -233,9 +223,9 @@ private fun FinancialTripCard(
                         style = TextStyle(
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Black,
-                            letterSpacing = 0.5.sp
+                            letterSpacing = 0.5.sp,
                         ),
-                        color = TealCyan
+                        color = TealCyan,
                     )
                 }
             }
@@ -245,13 +235,13 @@ private fun FinancialTripCard(
                     .size(36.dp)
                     .clip(CircleShape)
                     .background(TealCyan.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Rounded.AccountBalanceWallet,
                     contentDescription = "Split",
                     tint = TealCyan,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
                 )
             }
         }
@@ -266,7 +256,7 @@ fun SyncingLedgerPlaceholder() {
             imageVector = Icons.Rounded.BlurOn,
             contentDescription = null,
             tint = TealCyan.copy(alpha = 0.5f),
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier.size(40.dp),
         )
         Spacer(Modifier.height(12.dp))
         Text(
@@ -274,7 +264,7 @@ fun SyncingLedgerPlaceholder() {
             color = dynamicColor.copy(alpha = 0.4f),
             fontWeight = FontWeight.Black,
             fontSize = 10.sp,
-            letterSpacing = 2.sp
+            letterSpacing = 2.sp,
         )
     }
 }

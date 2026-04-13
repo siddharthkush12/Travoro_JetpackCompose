@@ -16,47 +16,49 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = TealCyan,
-    onPrimary = DeepSpace,             // Dark text on cyan buttons looks best
-    secondary = SunsetOrange,
-    onSecondary = Color.White,
-    background = MidnightBlue,
-    onBackground = TextWhite,
-    surface = SurfaceDark,
-    onSurface = TextOffWhite,
-    surfaceVariant = SurfaceLighter,   // Used for borders/dividers
-    error = ErrorRed
-)
+private val DarkColorScheme =
+    darkColorScheme(
+        primary = TealCyan,
+        onPrimary = DeepSpace, // Dark text on cyan buttons looks best
+        secondary = SunsetOrange,
+        onSecondary = Color.White,
+        background = MidnightBlue,
+        onBackground = TextWhite,
+        surface = SurfaceDark,
+        onSurface = TextOffWhite,
+        surfaceVariant = SurfaceLighter, // Used for borders/dividers
+        error = ErrorRed,
+    )
 
-private val LightColorScheme = lightColorScheme(
-    primary = TealCyanDark,            // Slightly darker cyan for better contrast on white
-    onPrimary = Color.White,
-    secondary = SunsetOrange,
-    onSecondary = Color.White,
-    background = CloudWhite,
-    onBackground = TextDark,
-    surface = PureWhite,
-    onSurface = TextDark,
-    surfaceVariant = SoftGray,
-    error = ErrorRed
-)
+private val LightColorScheme =
+    lightColorScheme(
+        primary = TealCyanDark, // Slightly darker cyan for better contrast on white
+        onPrimary = Color.White,
+        secondary = SunsetOrange,
+        onSecondary = Color.White,
+        background = CloudWhite,
+        onBackground = TextDark,
+        surface = PureWhite,
+        onSurface = TextDark,
+        surfaceVariant = SoftGray,
+        error = ErrorRed,
+    )
 
 @Composable
 fun TravelAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Set to false by default to protect your Travoro branding
     dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    val colorScheme =
+        when {
+            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                val context = LocalContext.current
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            }
+            darkTheme -> DarkColorScheme
+            else -> LightColorScheme
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -70,6 +72,6 @@ fun TravelAppTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }

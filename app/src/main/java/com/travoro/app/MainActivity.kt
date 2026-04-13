@@ -13,21 +13,18 @@ import com.travoro.app.data.remote.api.TravelApiService
 import com.travoro.app.di.Session
 import com.travoro.app.rootNavigation.NavGraph
 import com.travoro.app.ui.theme.TravelAppTheme
-import com.travoro.app.ui.utils.DarkMode.ThemeViewModel
 import com.travoro.app.ui.utils.RequestLocationPermission
 import com.travoro.app.ui.utils.RequestNotificationPermission
+import com.travoro.app.ui.utils.darkMode.ThemeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 enum class PermissionStep {
-    REQUESTING_LOCATION,
-    REQUESTING_NOTIFICATION,
-    FINISHED
+    REQUESTING_LOCATION, REQUESTING_NOTIFICATION, FINISHED,
 }
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     @Inject
     lateinit var travelApiService: TravelApiService
     @Inject
@@ -40,12 +37,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-
             val rootNavController = rememberNavController()
             var permissionStep by remember { mutableStateOf(PermissionStep.REQUESTING_LOCATION) }
             val themeViewModel: ThemeViewModel = hiltViewModel()
             val isDark by themeViewModel.isDark.collectAsStateWithLifecycle()
-
 
             TravelAppTheme(darkTheme = isDark) {
                 when (permissionStep) {
@@ -56,7 +51,7 @@ class MainActivity : ComponentActivity() {
                             },
                             onLocPermissionDenied = {
                                 permissionStep = PermissionStep.REQUESTING_NOTIFICATION
-                            }
+                            },
                         )
                     }
 
@@ -67,14 +62,14 @@ class MainActivity : ComponentActivity() {
                             },
                             onNotificationPermissionDenied = {
                                 permissionStep = PermissionStep.FINISHED
-                            }
+                            },
                         )
                     }
 
                     PermissionStep.FINISHED -> {
-                        val scope=rememberCoroutineScope()
+                        val scope = rememberCoroutineScope()
                         LaunchedEffect(Unit) {
-                            if(!session.getToken().isNullOrBlank()){
+                            if (!session.getToken().isNullOrBlank()) {
                                 appInitializer.initializeApp(scope)
                             }
                         }

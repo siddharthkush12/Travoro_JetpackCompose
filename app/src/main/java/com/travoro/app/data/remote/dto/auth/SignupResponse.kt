@@ -2,7 +2,6 @@ package com.travoro.app.data.remote.dto.auth
 
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class SignupResponse(
     val success: Boolean,
@@ -10,4 +9,3 @@ data class SignupResponse(
     val message: String,
     val `data`: Data,
 )
-

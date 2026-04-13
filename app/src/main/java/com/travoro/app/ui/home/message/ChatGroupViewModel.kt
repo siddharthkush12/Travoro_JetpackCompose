@@ -12,90 +12,56 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
-class ChatGroupViewModel @Inject constructor(
-    private val travelApiService: TravelApiService
-) : ViewModel() {
+class ChatGroupViewModel
+    @Inject
+    constructor(
+        private val travelApiService: TravelApiService,
+    ) : ViewModel() {
+        private val _groups = MutableStateFlow<List<ChatGroup>>(emptyList())
+        val groups = _groups.asStateFlow()
 
-    private val _groups = MutableStateFlow<List<ChatGroup>>(emptyList())
-    val groups = _groups.asStateFlow()
+        private val _uiState = MutableStateFlow<ChatGroupEvent>(ChatGroupEvent.Idle)
+        val uiState = _uiState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<ChatGroupEvent>(ChatGroupEvent.Idle)
-    val uiState = _uiState.asStateFlow()
-
-
-    init {
-        fetchGroups()
-    }
-
-    fun fetchGroups() {
-
-        viewModelScope.launch {
-
-            _uiState.value = ChatGroupEvent.Loading
-
-            val response = safeApiCall {
-                travelApiService.getChatGroup()
-            }
-            when (response) {
-
-                is ApiResult.Success -> {
-
-                    _groups.value = response.data.data
-                    _uiState.value = ChatGroupEvent.Success
-
-                }
-
-                is ApiResult.Error -> {
-
-                    _uiState.value =
-                        ChatGroupEvent.Error(response.message)
-
-                }
-
-                is ApiResult.Exception -> {
-
-                    _uiState.value =
-                        ChatGroupEvent.Error(response.message)
-
-                }
-
-            }
-
+        init {
+            fetchGroups()
         }
 
-    }
+        fun fetchGroups() {
+            viewModelScope.launch {
+                _uiState.value = ChatGroupEvent.Loading
 
-    fun deleteChatAndTrip(tripId: String){
-        viewModelScope.launch {
-            _uiState.value = ChatGroupEvent.Loading
-            val response = safeApiCall {
-                travelApiService.deleteTrip(tripId)
-            }
-            when (response) {
-                is ApiResult.Success -> {
-                    _groups.value=_groups.value.filterNot {
-                        it.trip._id==tripId
+                val response =
+                    safeApiCall {
+                        travelApiService.getChatGroup()
                     }
-                    _uiState.value = ChatGroupEvent.Success
-                }
-                is ApiResult.Error -> {
-                    _uiState.value = ChatGroupEvent.Error(response.message)
-                }
-                is ApiResult.Exception -> {
-                    _uiState.value = ChatGroupEvent.Error(response.message)
+                when (response) {
+                    is ApiResult.Success -> {
+                        _groups.value = response.data.data
+                        _uiState.value = ChatGroupEvent.Success
+                    }
+
+                    is ApiResult.Error -> {
+                        _uiState.value =
+                            ChatGroupEvent.Error(response.message)
+                    }
+
+                    is ApiResult.Exception -> {
+                        _uiState.value =
+                            ChatGroupEvent.Error(response.message)
+                    }
                 }
             }
         }
+
+        sealed class ChatGroupEvent {
+            object Idle : ChatGroupEvent()
+
+            object Loading : ChatGroupEvent()
+
+            object Success : ChatGroupEvent()
+
+            data class Error(val message: String) : ChatGroupEvent()
+        }
     }
-
-
-    sealed class ChatGroupEvent {
-        object Idle : ChatGroupEvent()
-        object Loading : ChatGroupEvent()
-        object Success : ChatGroupEvent()
-        data class Error(val message: String) : ChatGroupEvent()
-    }
-
-}

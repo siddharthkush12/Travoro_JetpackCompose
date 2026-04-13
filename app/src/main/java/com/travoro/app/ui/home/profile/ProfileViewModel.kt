@@ -1,6 +1,5 @@
 package com.travoro.app.ui.home.profile
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.travoro.app.core.network.ApiResult
@@ -18,27 +17,20 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
-
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     val travelApiService: TravelApiService,
-    val session: Session
+    val session: Session,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow<ProfileEvent>(ProfileEvent.Idle)
     val uiState = _uiState.asStateFlow()
 
     private val _profile = MutableStateFlow<Data?>(null)
     val profile = _profile.asStateFlow()
 
-
-    private val _navigationEvent = MutableSharedFlow<ProfileNavigation>()
-    val navigationEvent = _navigationEvent.asSharedFlow()
-
     init {
         fetchProfile()
     }
-
 
     fun fetchProfile() {
         viewModelScope.launch {
@@ -51,7 +43,6 @@ class ProfileViewModel @Inject constructor(
                 is ApiResult.Success -> {
                     _profile.value = response.data.data
                     _uiState.value = (ProfileEvent.Success)
-
                 }
 
                 is ApiResult.Error -> {
@@ -65,7 +56,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-
     fun updateProfile(
         profilePic: MultipartBody.Part?,
         fullname: String,
@@ -74,7 +64,7 @@ class ProfileViewModel @Inject constructor(
         phone: String,
         city: String,
         state: String,
-        country: String
+        country: String,
     ) {
         viewModelScope.launch {
             _uiState.emit(ProfileEvent.Loading)
@@ -87,7 +77,7 @@ class ProfileViewModel @Inject constructor(
                     phone = phone.toRequestBody(),
                     city = city.toRequestBody(),
                     state = state.toRequestBody(),
-                    country = country.toRequestBody()
+                    country = country.toRequestBody(),
                 )
             }
             when (response) {
@@ -110,10 +100,6 @@ class ProfileViewModel @Inject constructor(
     }
 
 
-    sealed class ProfileNavigation {
-        object NavigationToHome : ProfileNavigation()
-    }
-
     sealed class ProfileEvent {
         object Idle : ProfileEvent()
         object Loading : ProfileEvent()
@@ -121,5 +107,4 @@ class ProfileViewModel @Inject constructor(
         object UpdateSuccess : ProfileEvent()
         data class Error(val message: String) : ProfileEvent()
     }
-
 }

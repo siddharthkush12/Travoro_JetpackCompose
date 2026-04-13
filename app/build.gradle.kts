@@ -6,22 +6,19 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
-
-
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
 android {
     namespace = "com.travoro.app"
-    compileSdk =36
-
-
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.travoro.app"
         minSdk = 24
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.0.5"
+        versionCode = 9
+        versionName = "1.0.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -31,7 +28,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -91,28 +88,21 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2024.01.00"))
     implementation("androidx.compose.material:material-icons-extended")
     // Retrofit(API call)
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")         //Retrofit
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")   //Gson converter
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")            //OkHttp
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0") //Logging interceptor
-    //Coil
+    implementation("com.squareup.retrofit2:retrofit:2.9.0") // Retrofit
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // Gson converter
+    implementation("com.squareup.okhttp3:okhttp:4.12.0") // OkHttp
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0") // Logging interceptor
+    // Coil
     implementation("io.coil-kt:coil-compose:2.6.0")
-    //Socket.io
+    // Socket.io
     implementation("io.socket:socket.io-client:2.0.0") {
         exclude(group = "org.json", module = "json")
     }
-    //Location
+    // Location
     implementation("com.google.android.gms:play-services-location:21.0.1")
     // Map
     implementation("org.osmdroid:osmdroid-android:6.1.16")
-    //glide
+    // glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
     ksp("com.github.bumptech.glide:compiler:4.16.0")
-
-
-
-
-
-
-
 }

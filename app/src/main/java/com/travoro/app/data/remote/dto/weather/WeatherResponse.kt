@@ -1,24 +1,20 @@
 package com.travoro.app.data.remote.dto.weather
 
-
 import kotlinx.serialization.Serializable
-
 
 @Serializable
 data class WeatherResponse(
     val code: Int,
     val success: Boolean,
     val message: String,
-    val data: WeatherData
-
+    val data: WeatherData,
 )
 
 @Serializable
 data class WeatherData(
     val location: String,
     val forecast: List<ForecastDay>,
-    val alerts: List<WeatherAlert>
-
+    val alerts: List<WeatherAlert>,
 )
 
 @Serializable
@@ -32,9 +28,8 @@ data class ForecastDay(
     val humidity: Int,
     val rainChance: Int,
     val windSpeed: Double,
-    val uv: Double
+    val uv: Double,
 )
-
 
 @Serializable
 data class WeatherAlert(
@@ -46,11 +41,8 @@ data class WeatherAlert(
     val effective: String,
     val expires: String,
     val description: String,
-    val instruction: String?
+    val instruction: String?,
 )
-
-
-
 
 // UI MODEL DATA MODEL
 
@@ -63,9 +55,8 @@ data class WeatherUiModel(
     val todayWindSpeed: Double,
     val todayUv: Double,
     val forecast: List<ForecastUiModel>,
-    val alerts: List<AlertUiModel>
+    val alerts: List<AlertUiModel>,
 )
-
 
 data class ForecastUiModel(
     val date: String,
@@ -75,10 +66,8 @@ data class ForecastUiModel(
     val condition: String,
     val icon: String,
     val rainChance: Int,
-    val uv: Double
+    val uv: Double,
 )
-
-
 
 data class AlertUiModel(
     val headline: String,
@@ -89,5 +78,5 @@ data class AlertUiModel(
     val effective: String,
     val expires: String,
     val description: String,
-    val instruction: String?
+    val instruction: String?,
 )

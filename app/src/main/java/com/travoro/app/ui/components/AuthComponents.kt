@@ -30,18 +30,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.travoro.app.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.travoro.app.R
 import com.travoro.app.ui.auth.login.LoginViewModel
 import com.travoro.app.ui.theme.MidnightBlue
 import com.travoro.app.ui.theme.TealCyan
 import kotlinx.coroutines.delay
-
-
-
 
 @Composable
 fun AuthInputText(
@@ -50,7 +47,7 @@ fun AuthInputText(
     placeholder: String,
     label: String,
     keyboardOption: KeyboardOptions,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     val isPasswordField = keyboardOption.keyboardType == KeyboardType.Password
     var passwordVisible by remember { mutableStateOf(false) }
@@ -67,8 +64,8 @@ fun AuthInputText(
                     fontFamily = FontFamily.Monospace,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Black,
-                    letterSpacing = 1.sp
-                )
+                    letterSpacing = 1.sp,
+                ),
             )
         },
         placeholder = {
@@ -78,8 +75,8 @@ fun AuthInputText(
                     fontFamily = FontFamily.Monospace,
                     fontSize = 12.sp,
                     color = dynamicColor.copy(alpha = 0.3f),
-                    letterSpacing = 1.sp
-                )
+                    letterSpacing = 1.sp,
+                ),
             )
         },
         maxLines = 1,
@@ -88,7 +85,7 @@ fun AuthInputText(
             color = dynamicColor,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            letterSpacing = 1.sp
+            letterSpacing = 1.sp,
         ),
         shape = RoundedCornerShape(16.dp),
         visualTransformation = if (isPasswordField && !passwordVisible) {
@@ -108,11 +105,13 @@ fun AuthInputText(
                     Icon(
                         imageVector = image,
                         contentDescription = "Toggle password visibility",
-                        tint = if (passwordVisible) TealCyan else dynamicColor.copy(alpha = 0.4f)
+                        tint = if (passwordVisible) TealCyan else dynamicColor.copy(alpha = 0.4f),
                     )
                 }
             }
-        } else null,
+        } else {
+            null
+        },
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = TealCyan,
             unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
@@ -123,14 +122,12 @@ fun AuthInputText(
             unfocusedContainerColor = Color.White.copy(alpha = 0.12f),
         ),
         keyboardOptions = keyboardOption,
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
-
 @Composable
 fun AnimatedTravoroTitle() {
-
     val word = "Travoro"
     var visibleText by remember { mutableStateOf("") }
 
@@ -152,15 +149,14 @@ fun AnimatedTravoroTitle() {
     }
 
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-
         Text(
             text = "with ",
             color = Color.White.copy(alpha = 0.9f),
             fontSize = 34.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily(Font(R.font.inknutantiquamedium))
+            fontFamily = FontFamily(Font(R.font.inknutantiquamedium)),
         )
 
         Text(
@@ -169,21 +165,17 @@ fun AnimatedTravoroTitle() {
             fontSize = 34.sp,
             letterSpacing = 5.sp,
             fontWeight = FontWeight.ExtraBold,
-            fontFamily = FontFamily(Font(R.font.inknutantiquamedium))
+            fontFamily = FontFamily(Font(R.font.inknutantiquamedium)),
         )
     }
 }
-
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForgetPasswordSheet(
     viewModel: LoginViewModel,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
-
     val forgetEmail by viewModel.forgetEmail.collectAsStateWithLifecycle()
     val forgotState by viewModel.forgotState.collectAsStateWithLifecycle()
 
@@ -194,7 +186,7 @@ fun ForgetPasswordSheet(
         containerColor = MidnightBlue,
         shape = RoundedCornerShape(
             topStart = 35.dp,
-            topEnd = 35.dp
+            topEnd = 35.dp,
         ),
         dragHandle = {
             Box(
@@ -204,26 +196,25 @@ fun ForgetPasswordSheet(
                     .width(50.dp)
                     .background(
                         Color.White,
-                        RoundedCornerShape(50)
-                    )
+                        RoundedCornerShape(50),
+                    ),
             )
-        }
+        },
     ) {
-
         if (forgotState is LoginViewModel.ForgotPasswordState.Success) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 40.dp),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     LottieAnimation(
                         composition = composition,
                         iterations = 1,
-                        modifier = Modifier.size(170.dp)
+                        modifier = Modifier.size(170.dp),
                     )
                     Spacer(modifier = Modifier.height(20.dp))
 
@@ -231,14 +222,14 @@ fun ForgetPasswordSheet(
                         text = "Check your inbox",
                         color = Color.White,
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
                         text = "Password reset link sent successfully",
                         color = Color.White.copy(alpha = 0.6f),
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
                     )
                 }
             }
@@ -251,17 +242,16 @@ fun ForgetPasswordSheet(
             return@ModalBottomSheet
         }
 
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 28.dp, vertical = 20.dp)
+                .padding(horizontal = 28.dp, vertical = 20.dp),
         ) {
             Text(
                 text = "Reset your Password",
                 color = Color.White,
                 fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -270,7 +260,7 @@ fun ForgetPasswordSheet(
                 text = "Enter your email and we'll guide you back on track.",
                 color = Color.White.copy(alpha = 0.6f),
                 fontSize = 14.sp,
-                lineHeight = 20.sp
+                lineHeight = 20.sp,
             )
 
             Spacer(modifier = Modifier.height(30.dp))
@@ -281,13 +271,12 @@ fun ForgetPasswordSheet(
                 placeholder = "Where should we send the link?",
                 label = "Email Address",
                 keyboardOption = KeyboardOptions(
-                    keyboardType = KeyboardType.Email
+                    keyboardType = KeyboardType.Email,
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(28.dp))
-
 
             Button(
                 onClick = viewModel::onForgetPasswordButtonClick,
@@ -296,25 +285,24 @@ fun ForgetPasswordSheet(
                     .height(60.dp),
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = TealCyan
+                    containerColor = TealCyan,
                 ),
                 elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 6.dp
+                    defaultElevation = 6.dp,
                 ),
-                enabled = forgotState !is LoginViewModel.ForgotPasswordState.Loading
+                enabled = forgotState !is LoginViewModel.ForgotPasswordState.Loading,
             ) {
-
                 if (forgotState is LoginViewModel.ForgotPasswordState.Loading) {
                     CircularProgressIndicator(
                         color = Color.White,
                         strokeWidth = 2.5.dp,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(22.dp),
                     )
                 } else {
                     Text(
                         text = "Send Link to Email",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
@@ -325,7 +313,7 @@ fun ForgetPasswordSheet(
                 Text(
                     text = (forgotState as LoginViewModel.ForgotPasswordState.Error).message,
                     color = Color.Red,
-                    fontSize = 13.sp
+                    fontSize = 13.sp,
                 )
             }
 

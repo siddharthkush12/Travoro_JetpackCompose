@@ -2,7 +2,7 @@ package com.travoro.app.data.remote.dto.message
 
 data class MessageResponse(
     val success: Boolean,
-    val data: List<Message>
+    val data: List<Message>,
 )
 
 data class Message(
@@ -12,11 +12,11 @@ data class Message(
     val text: String?,
     val type: String,
     val mediaUrl: String?,
-    val createdAt: String
+    val createdAt: String,
 )
 
 data class Sender(
     val _id: String,
     val fullname: String?,
-    val profilePic: String?
+    val profilePic: String?,
 )

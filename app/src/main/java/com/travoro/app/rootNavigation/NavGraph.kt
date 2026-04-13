@@ -16,7 +16,7 @@ import com.travoro.app.ui.auth.signup.SignUpScreen
 import com.travoro.app.ui.home.HomeScreen
 import com.travoro.app.ui.onboarding.OnboardingScreen
 import com.travoro.app.ui.splash.SplashScreen
-import com.travoro.app.ui.utils.DarkMode.ThemeViewModel
+import com.travoro.app.ui.utils.darkMode.ThemeViewModel
 
 @Composable
 fun NavGraph(
@@ -24,15 +24,13 @@ fun NavGraph(
     session: Session,
     themeViewModel: ThemeViewModel,
 ) {
-
     NavHost(
         navController = rootNavController,
         startDestination = SplashScreen,
-
         enterTransition = {
             slideIntoContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(400)
+                animationSpec = tween(400),
             )
         },
         exitTransition = {
@@ -41,14 +39,13 @@ fun NavGraph(
         popEnterTransition = {
             slideIntoContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                animationSpec = tween(400)
+                animationSpec = tween(400),
             )
         },
         popExitTransition = {
             fadeOut(animationSpec = tween(400))
-        }
+        },
     ) {
-
         composable<SplashScreen> {
             SplashScreen(
                 session = session,
@@ -58,7 +55,7 @@ fun NavGraph(
                             inclusive = true
                         }
                     }
-                }
+                },
             )
         }
 
@@ -70,20 +67,17 @@ fun NavGraph(
                             inclusive = true
                         }
                     }
-                }
+                },
             )
         }
 
-
         composable<Login> {
-            LoginScreen(rootNavController=rootNavController)
+            LoginScreen(rootNavController = rootNavController)
         }
-
 
         composable<SignUp> {
-            SignUpScreen(rootNavController=rootNavController)
+            SignUpScreen(rootNavController = rootNavController)
         }
-
 
         composable<Home>(
             enterTransition = {
@@ -91,12 +85,12 @@ fun NavGraph(
             },
             exitTransition = {
                 fadeOut(tween(500)) + scaleOut(targetScale = 0.9f, animationSpec = tween(500))
-            }
+            },
         ) {
             HomeScreen(
                 rootNavController = rootNavController,
                 session = session,
-                themeViewModel = themeViewModel
+                themeViewModel = themeViewModel,
             )
         }
     }

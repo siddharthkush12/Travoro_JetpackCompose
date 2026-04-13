@@ -38,7 +38,7 @@ import com.travoro.app.ui.theme.WarningYellow
 fun MyTripsScreen(
     myTripViewModel: MyTripsViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
-    onTripClick: (TripDto) -> Unit
+    onTripClick: (TripDto) -> Unit,
 ) {
     val uiState by myTripViewModel.uiState.collectAsStateWithLifecycle()
     val dynamicColor = MaterialTheme.colorScheme.onSurface
@@ -47,23 +47,20 @@ fun MyTripsScreen(
         myTripViewModel.fetchMyTrips()
     }
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-
+            .background(MaterialTheme.colorScheme.background),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
             HomeBarHeaders(
                 title = "JOURNEY ARCHIVE",
                 subtitle = "EXPEDITIONS IN PROGRESS",
                 icon = Icons.Default.FlightTakeoff,
-                topPadding = paddingValues.calculateTopPadding()
+                topPadding = paddingValues.calculateTopPadding(),
             )
 
             Box(modifier = Modifier.weight(1f)) {
@@ -75,9 +72,7 @@ fun MyTripsScreen(
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .size(56.dp)
-                                .fillMaxWidth()
-
-
+                                .fillMaxWidth(),
                         )
                     }
 
@@ -90,15 +85,15 @@ fun MyTripsScreen(
                                 start = 20.dp,
                                 end = 20.dp,
                                 top = 16.dp,
-                                bottom = paddingValues.calculateBottomPadding() + 40.dp
+                                bottom = paddingValues.calculateBottomPadding() + 40.dp,
                             ),
-                            verticalArrangement = Arrangement.spacedBy(20.dp)
+                            verticalArrangement = Arrangement.spacedBy(20.dp),
                         ) {
                             items(trips) { trip ->
                                 PremiumHeroTripCard(
                                     trip = trip,
                                     dynamicColor = dynamicColor,
-                                    onClick = { onTripClick(trip) }
+                                    onClick = { onTripClick(trip) },
                                 )
                             }
                         }
@@ -115,7 +110,7 @@ fun MyTripsScreen(
 fun PremiumHeroTripCard(
     trip: TripDto,
     dynamicColor: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val statusColor = when (trip.status?.lowercase()) {
         "active" -> TealCyan
@@ -131,19 +126,18 @@ fun PremiumHeroTripCard(
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
         border = BorderStroke(1.dp, dynamicColor.copy(alpha = 0.06f)),
         shadowElevation = 6.dp,
-
-        ) {
+    ) {
         Column {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(200.dp),
             ) {
                 AsyncImage(
                     model = trip.coverImage,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
                 )
 
                 Box(
@@ -154,13 +148,12 @@ fun PremiumHeroTripCard(
                                 colors = listOf(
                                     Color.Transparent,
                                     Color.Black.copy(alpha = 0.4f),
-                                    Color.Black.copy(alpha = 0.9f)
+                                    Color.Black.copy(alpha = 0.9f),
                                 ),
-                                startY = 150f
-                            )
-                        )
+                                startY = 150f,
+                            ),
+                        ),
                 )
-
 
                 Surface(
                     modifier = Modifier
@@ -168,17 +161,17 @@ fun PremiumHeroTripCard(
                         .padding(16.dp),
                     shape = RoundedCornerShape(50),
                     color = Color.Black.copy(alpha = 0.4f),
-                    border = BorderStroke(0.5.dp, statusColor.copy(alpha = 0.3f))
+                    border = BorderStroke(0.5.dp, statusColor.copy(alpha = 0.3f)),
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(6.dp)
                                 .clip(CircleShape)
-                                .background(statusColor)
+                                .background(statusColor),
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
@@ -186,9 +179,9 @@ fun PremiumHeroTripCard(
                             style = TextStyle(
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Black,
-                                letterSpacing = 1.sp
+                                letterSpacing = 1.sp,
                             ),
-                            color = statusColor
+                            color = statusColor,
                         )
                     }
                 }
@@ -196,18 +189,18 @@ fun PremiumHeroTripCard(
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(20.dp)
+                        .padding(20.dp),
                 ) {
                     Text(
                         text = trip.title.uppercase(),
                         style = TextStyle(
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Black,
-                            letterSpacing = 1.sp
+                            letterSpacing = 1.sp,
                         ),
                         color = Color.White,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -215,7 +208,7 @@ fun PremiumHeroTripCard(
                             Icons.Default.LocationOn,
                             null,
                             tint = TealCyan,
-                            modifier = Modifier.size(12.dp)
+                            modifier = Modifier.size(12.dp),
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
@@ -223,11 +216,11 @@ fun PremiumHeroTripCard(
                             style = TextStyle(
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
-                                letterSpacing = 2.sp
+                                letterSpacing = 2.sp,
                             ),
                             color = Color.White.copy(alpha = 0.7f),
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
                         )
                     }
                 }
@@ -241,40 +234,39 @@ fun PremiumHeroTripCard(
 @Composable
 fun PremiumCardFooter(
     trip: TripDto,
-    dynamicColor: Color
+    dynamicColor: Color,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(20.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         ) {
             Text(
                 text = "EXPEDITION CREW",
                 style = TextStyle(
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Black,
-                    letterSpacing = 1.5.sp
+                    letterSpacing = 1.5.sp,
                 ),
-                color = dynamicColor.copy(alpha = 0.4f)
+                color = dynamicColor.copy(alpha = 0.4f),
             )
 
             Spacer(Modifier.height(10.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy((-12).dp)
+                horizontalArrangement = Arrangement.spacedBy((-12).dp),
             ) {
                 trip.members.take(4).forEach { member ->
                     Box(
                         modifier = Modifier
                             .size(34.dp)
                             .clip(CircleShape)
-                            .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
+                            .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape),
                     ) {
                         AsyncImage(
                             model = member.user.profilePic,
@@ -283,7 +275,7 @@ fun PremiumCardFooter(
                                 .fillMaxSize()
                                 .clip(CircleShape)
                                 .background(dynamicColor.copy(alpha = 0.1f)),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Crop,
                         )
                     }
                 }
@@ -295,21 +287,21 @@ fun PremiumCardFooter(
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.surface)
                             .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(dynamicColor.copy(alpha = 0.05f)),
-                            contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 "+${trip.members.size - 4}",
                                 style = TextStyle(
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Black,
-                                    color = TealCyan
-                                )
+                                    color = TealCyan,
+                                ),
                             )
                         }
                     }
@@ -323,13 +315,13 @@ fun PremiumCardFooter(
                 .clip(CircleShape)
                 .background(dynamicColor.copy(alpha = 0.03f))
                 .border(1.dp, dynamicColor.copy(alpha = 0.08f), CircleShape),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 Icons.AutoMirrored.Rounded.ArrowForward,
                 contentDescription = null,
                 tint = TealCyan,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(18.dp),
             )
         }
     }

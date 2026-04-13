@@ -60,16 +60,16 @@ fun NotificationScreen(
         viewModel.fetchNotification()
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.background),
     ) {
         CustomTopBar(
             title = "NOTIFICATIONS",
             icon = Icons.Filled.NotificationImportant,
-            onBackClick = { navController.popBackStack() })
+            onBackClick = { navController.popBackStack() },
+        )
 
         when (state) {
             is NotificationViewModel.NotificationState.Loading -> {
@@ -88,7 +88,7 @@ fun NotificationScreen(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     item {
                         Row(
@@ -96,21 +96,21 @@ fun NotificationScreen(
                                 .fillMaxWidth()
                                 .padding(bottom = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
                                 text = "RECENT ACTIVITY",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     letterSpacing = 2.sp,
                                     fontWeight = FontWeight.Black,
-                                    color = TealCyan.copy(alpha = 0.7f)
-                                )
+                                    color = TealCyan.copy(alpha = 0.7f),
+                                ),
                             )
                             Box(
                                 modifier = Modifier
                                     .size(6.dp)
                                     .clip(CircleShape)
-                                    .background(TealCyan)
+                                    .background(TealCyan),
                             )
                         }
                     }
@@ -126,17 +126,13 @@ fun NotificationScreen(
     }
 }
 
-
 @Composable
-fun NotificationItem(
-    item: Data
-) {
-
+fun NotificationItem(item: Data) {
     val icons = listOf(
         Icons.Rounded.AutoAwesome,
         Icons.Rounded.FlightTakeoff,
         Icons.Rounded.Explore,
-        Icons.Rounded.Map
+        Icons.Rounded.Map,
     )
 
     val randomIcon = remember { icons.random() }
@@ -148,7 +144,7 @@ fun NotificationItem(
         shape = RoundedCornerShape(28.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.09f)),
-        shadowElevation = 2.dp
+        shadowElevation = 2.dp,
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -157,13 +153,14 @@ fun NotificationItem(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(18.dp))
-                    .background(TealCyan.copy(alpha = 0.1f)), contentAlignment = Alignment.Center
+                    .background(TealCyan.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = randomIcon,
                     contentDescription = null,
                     tint = TealCyan,
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(22.dp),
                 )
             }
 
@@ -173,18 +170,18 @@ fun NotificationItem(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = item.title?.uppercase() ?: "",
                         style = MaterialTheme.typography.labelLarge.copy(
                             fontWeight = FontWeight.Black,
                             letterSpacing = 0.5.sp,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
 
                     Text(
@@ -192,20 +189,23 @@ fun NotificationItem(
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontSize = 10.sp,
                             color = TealCyan.copy(alpha = 0.6f),
-                            fontWeight = FontWeight.Bold
-                        )
+                            fontWeight = FontWeight.Bold,
+                        ),
                     )
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = item.description ?: "", style = MaterialTheme.typography.bodyMedium.copy(
-                        lineHeight = 18.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
-                    ), maxLines = 3, overflow = TextOverflow.Ellipsis
+                    text = item.description ?: "",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        lineHeight = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
     }
 }
-

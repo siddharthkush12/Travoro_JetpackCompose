@@ -8,10 +8,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.PersonSearch
-import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,23 +27,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.travoro.app.data.remote.dto.others.TravelOption
-import com.travoro.app.ui.home.homeNavigation.AddMembersTab
+import com.travoro.app.ui.home.homeNavigation.AiSearch
 import com.travoro.app.ui.home.homeNavigation.BillSplit
 import com.travoro.app.ui.home.homeNavigation.CreateTripTab
+import com.travoro.app.ui.home.homeNavigation.FindMember
 import com.travoro.app.ui.home.homeNavigation.Sos
 import com.travoro.app.ui.theme.ErrorRed
 import com.travoro.app.ui.theme.TealCyan
 import com.travoro.app.ui.utils.LocationHelper
 import com.travoro.app.ui.utils.mapNavigation.openGoogleMapsCurrentLocation
-import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
-import com.travoro.app.ui.home.homeNavigation.FindMember
-import com.travoro.app.ui.home.homeNavigation.Translate
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun HomeOptionCards(homeNavController: NavController,homeViewModel: HomeViewModel) {
+fun HomeOptionCards(
+    homeNavController: NavController,
+) {
     val context = LocalContext.current
     val locationHelper = LocationHelper(context)
     val scope = rememberCoroutineScope()
@@ -52,10 +51,10 @@ fun HomeOptionCards(homeNavController: NavController,homeViewModel: HomeViewMode
     val options = listOf(
         TravelOption("Create Trip", Icons.Default.Add, CreateTripTab),
         TravelOption("Bill Split", Icons.Default.AccountBalanceWallet, BillSplit),
-        TravelOption("Translate", Icons.Default.Translate, Translate),
+        TravelOption("Ai Search", Icons.Default.SmartToy, AiSearch),
         TravelOption("Find Member", Icons.Default.PersonSearch, FindMember),
         TravelOption("Map", Icons.Default.Map, ""),
-        TravelOption("SOS Alert", Icons.Default.Warning, Sos, isAlert = true)
+        TravelOption("SOS Alert", Icons.Default.Warning, Sos, isAlert = true),
     )
 
     Surface(
@@ -65,24 +64,24 @@ fun HomeOptionCards(homeNavController: NavController,homeViewModel: HomeViewMode
         shape = RoundedCornerShape(32.dp),
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
         contentColor = MaterialTheme.colorScheme.onSurface,
-        border = BorderStroke(width = 1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
+        border = BorderStroke(width = 1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(28.dp)
+            verticalArrangement = Arrangement.spacedBy(28.dp),
         ) {
-
             val rows = options.chunked(3)
             rows.forEach { rowItems ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     rowItems.forEach { option ->
                         Box(
-                            modifier = Modifier.weight(1f), contentAlignment = Alignment.Center
+                            modifier = Modifier.weight(1f),
+                            contentAlignment = Alignment.Center,
                         ) {
                             AmbientGlowItem(
                                 item = option,
@@ -90,26 +89,23 @@ fun HomeOptionCards(homeNavController: NavController,homeViewModel: HomeViewMode
                                     when (option.title) {
                                         "Map" -> {
                                             scope.launch {
-                                                val location =
-                                                    locationHelper.getCurrentLocation(
-                                                        PRIORITY_HIGH_ACCURACY
-                                                    )
+                                                val location = locationHelper.getCurrentLocation(
+                                                    PRIORITY_HIGH_ACCURACY,
+                                                )
                                                 location?.let {
                                                     openGoogleMapsCurrentLocation(
                                                         context,
                                                         it.latitude,
-                                                        it.longitude
+                                                        it.longitude,
                                                     )
                                                 }
                                             }
                                         }
-
                                         else -> {
                                             homeNavController.navigate(option.route)
                                         }
                                     }
-
-                                }
+                                },
                             )
                         }
                     }
@@ -119,11 +115,10 @@ fun HomeOptionCards(homeNavController: NavController,homeViewModel: HomeViewMode
     }
 }
 
-
 @Composable
 fun AmbientGlowItem(
     item: TravelOption,
-    onNavigate: () -> Unit
+    onNavigate: () -> Unit,
 ) {
     val baseColor = if (item.isAlert) ErrorRed else TealCyan
 
@@ -132,10 +127,11 @@ fun AmbientGlowItem(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .clickable { onNavigate() }
-            .padding(8.dp)) {
-
+            .padding(8.dp),
+    ) {
         Box(
-            modifier = Modifier.size(56.dp), contentAlignment = Alignment.Center
+            modifier = Modifier.size(56.dp),
+            contentAlignment = Alignment.Center,
         ) {
             Box(
                 modifier = Modifier
@@ -145,26 +141,24 @@ fun AmbientGlowItem(
                             colors = listOf(
                                 baseColor.copy(alpha = 0.35f),
                                 baseColor.copy(alpha = 0.1f),
-                                Color.Transparent
-                            )
-                        )
-                    )
+                                Color.Transparent,
+                            ),
+                        ),
+                    ),
             )
-
             Icon(
                 imageVector = item.icon,
                 contentDescription = item.title,
                 tint = if (item.isAlert) ErrorRed else MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(26.dp)
+                modifier = Modifier.size(26.dp),
             )
         }
-
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = item.title,
             style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
         )
     }
 }

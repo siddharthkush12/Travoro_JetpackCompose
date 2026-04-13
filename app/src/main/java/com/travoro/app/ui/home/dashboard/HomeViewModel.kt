@@ -5,13 +5,12 @@ import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.travoro.app.data.remote.api.TravelApiService
-import com.travoro.app.ui.utils.LocationHelper
 import com.google.android.gms.location.Priority
 import com.travoro.app.core.network.ApiResult
 import com.travoro.app.core.network.safeApiCall
+import com.travoro.app.data.remote.api.TravelApiService
 import com.travoro.app.data.remote.dto.suggestion.Data
-import com.travoro.app.data.remote.dto.suggestion.SuggestionResponse
+import com.travoro.app.ui.utils.LocationHelper
 import com.travoro.app.ui.utils.TripLocationService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,20 +24,15 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val travelApiService: TravelApiService
+    private val travelApiService: TravelApiService,
 ) : ViewModel() {
-
     private var trackingJob: Job? = null
     private var runningTripId: String? = null
     private val _uiState = MutableStateFlow<HomeEvent>(HomeEvent.Idle)
     val uiState = _uiState.asStateFlow()
-
-    private val _homeNavigation = MutableSharedFlow<HomeNavigation>()
-    val navigation = _homeNavigation.asSharedFlow()
 
     private val locationHelper = LocationHelper(context)
 
@@ -51,12 +45,10 @@ class HomeViewModel @Inject constructor(
         MutableStateFlow<TrendingDestinationEvent>(TrendingDestinationEvent.Idle)
     val trendingDestination = _trendingDestination.asStateFlow()
 
-
     init {
         fetchLocationAndCity()
         fetchTrendingDestination()
     }
-
 
     fun fetchLocationAndCity() {
         viewModelScope.launch {
@@ -74,10 +66,8 @@ class HomeViewModel @Inject constructor(
 
             val cityName = locationHelper.getCityFromLocation(context, latitude, longitude)
             _city.value = cityName ?: ""
-
         }
     }
-
 
     fun fetchTrendingDestination() {
         viewModelScope.launch {
@@ -89,9 +79,7 @@ class HomeViewModel @Inject constructor(
             when (response) {
                 is ApiResult.Success -> {
                     val apiList = response.data.data ?: emptyList()
-                    val list = DefaultDestinations.list
-                    val resultList = apiList + list
-                    _trendingDestination.value = TrendingDestinationEvent.Success(resultList)
+                    _trendingDestination.value = TrendingDestinationEvent.Success(apiList)
                 }
 
                 is ApiResult.Exception -> {
@@ -105,99 +93,56 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
     fun startLocationForActiveTrips(userId: String?) {
-
         trackingJob?.cancel()
 
         trackingJob = viewModelScope.launch {
-
-            while(isActive){
-
+            while (isActive) {
                 val response = safeApiCall {
-
                     travelApiService.getActiveTripLite()
-
                 }
 
-                if(response is ApiResult.Success){
-
+                if (response is ApiResult.Success) {
                     val trip = response.data.data
 
-                    if(trip?.status == "active" && isLocationEnabled(context)){
-
-                        /* start only if not already running */
-
-                        if(runningTripId != trip._id){
-
+                    if (trip?.status == "active" && isLocationEnabled(context)) {
+                        if (runningTripId != trip._id) {
                             runningTripId = trip._id
-
                             val intent = Intent(
                                 context,
-                                TripLocationService::class.java
+                                TripLocationService::class.java,
                             )
-
                             intent.putExtra("tripId", trip._id)
-
                             intent.putExtra("userId", userId)
-
                             ContextCompat.startForegroundService(
                                 context,
-                                intent
+                                intent,
                             )
-
                         }
-
-                    }
-                    else{
-
+                    } else {
                         stopLocationService()
-
                     }
-
-                }
-                else{
-
+                } else {
                     stopLocationService()
-
                 }
 
-                delay(60000) // check every 1 minute
-
+                delay(60000)
             }
-
         }
-
     }
+
     private fun stopLocationService() {
         runningTripId = null
-
         val intent = Intent(
             context,
-            TripLocationService::class.java
+            TripLocationService::class.java,
         )
-
         context.stopService(intent)
-
     }
 
-
-    private fun isLocationEnabled(context: Context):Boolean{
-        return context
-            .getSharedPreferences("trip_pref", Context.MODE_PRIVATE)
-            .getBoolean("live_location_enabled",false)
-    }
-
-
-    fun clearError() {
-        _uiState.value = HomeEvent.Idle
-    }
-
-
-    sealed class HomeNavigation() {
-        object NavigationTTravelAi : HomeNavigation()
-        object NavigationToChatGroup : HomeNavigation()
-        object NavigationToMyTrips : HomeNavigation()
+    private fun isLocationEnabled(context: Context): Boolean {
+        return context.getSharedPreferences("trip_pref", Context.MODE_PRIVATE)
+            .getBoolean("live_location_enabled", false)
     }
 
 
@@ -208,13 +153,10 @@ class HomeViewModel @Inject constructor(
         data class Error(val message: String) : TrendingDestinationEvent()
     }
 
-
     sealed class HomeEvent {
         object Idle : HomeEvent()
         object Loading : HomeEvent()
         object Success : HomeEvent()
         data class Error(val message: String) : HomeEvent()
     }
-
-
 }

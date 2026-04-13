@@ -5,9 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class AcceptTripResponse(
     val success: Boolean,
     val message: String,
-    val data: SavedTrip
+    val data: SavedTrip,
 )
-
 
 data class SavedTrip(
     @SerializedName("_id")
@@ -36,16 +35,15 @@ data class SavedTrip(
     val recommendedTransport: String?,
     val balances: List<Balance>,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )
-
 
 data class Member(
     val user: String,
-    val role: String
+    val role: String,
 )
 
 data class Balance(
     val user: String,
-    val amount: Int
+    val amount: Int,
 )

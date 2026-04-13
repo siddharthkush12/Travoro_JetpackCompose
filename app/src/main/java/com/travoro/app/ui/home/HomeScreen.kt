@@ -41,7 +41,7 @@ import com.travoro.app.ui.home.homeNavigation.HomeTab
 import com.travoro.app.ui.home.navigationDrawer.NavigationDrawer
 import com.travoro.app.ui.home.profile.ProfileViewModel
 import com.travoro.app.ui.theme.TealCyan
-import com.travoro.app.ui.utils.DarkMode.ThemeViewModel
+import com.travoro.app.ui.utils.darkMode.ThemeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,17 +52,14 @@ fun HomeScreen(
     themeViewModel: ThemeViewModel,
     profileViewModel: ProfileViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel(),
-
-    ) {
+) {
     val homeNavController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
     val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val city by homeViewModel.city.collectAsStateWithLifecycle()
     val profile by profileViewModel.profile.collectAsStateWithLifecycle()
-
 
     LaunchedEffect(Unit) {
         homeViewModel.fetchLocationAndCity()
@@ -70,22 +67,21 @@ fun HomeScreen(
 
     LaunchedEffect(profile) {
         profile?.let {
-            session.storeProfileImage(it.profilePic ?: "")
+            session.storeProfileImage(it.profilePic)
         }
     }
 
-    val showTopBar =
-        currentRoute?.contains("HomeTab") == true ||
-                currentRoute?.contains("SearchTab") == true
+    val showTopBar = currentRoute?.contains("HomeTab") == true ||
+            currentRoute?.contains("SearchTab") == true
 
-    val showBottomBar =
-        currentRoute?.contains("HomeTab") == true ||
-                currentRoute?.contains("TravelAITab") == true ||
-                currentRoute?.contains("MyTripsTab") == true ||
-                currentRoute?.contains("ChatGroupTab") == true
+    val showBottomBar = currentRoute?.contains("HomeTab") == true ||
+            currentRoute?.contains("TravelAITab") == true ||
+            currentRoute?.contains("MyTripsTab") == true ||
+            currentRoute?.contains("ChatGroupTab") == true
 
     ModalNavigationDrawer(
-        drawerState = drawerState, drawerContent = {
+        drawerState = drawerState,
+        drawerContent = {
             NavigationDrawer(
                 homeNavController = homeNavController,
                 rootNavController = rootNavController,
@@ -94,7 +90,7 @@ fun HomeScreen(
                 profileViewModel = profileViewModel,
                 themeViewModel = themeViewModel,
             )
-        }
+        },
     ) {
         Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
             if (showTopBar) {
@@ -103,19 +99,19 @@ fun HomeScreen(
                         MaterialTheme.colorScheme.background,
                         MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
                         MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
-                        Color.Transparent
-                    )
+                        Color.Transparent,
+                    ),
                 )
 
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(gradientFade)
+                        .background(gradientFade),
                 ) {
                     TravoroTopBar(
                         city = city,
                         session,
-                        onOpenDrawer = { scope.launch { drawerState.open() } }
+                        onOpenDrawer = { scope.launch { drawerState.open() } },
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -131,17 +127,17 @@ fun HomeScreen(
                 homeViewModel = homeViewModel,
                 paddingValues = paddingValues,
                 session = session,
-                rootNavController = rootNavController
+                rootNavController = rootNavController,
             )
         }
     }
 }
 
-
 @Composable
 fun TravoroTopBar(
-    city: String?, session: Session,
-    onOpenDrawer: () -> Unit
+    city: String?,
+    session: Session,
+    onOpenDrawer: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -149,54 +145,56 @@ fun TravoroTopBar(
             .padding(horizontal = 24.dp, vertical = 16.dp)
             .statusBarsPadding(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-
         IconButton(
             onClick = onOpenDrawer,
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f), CircleShape)
+                .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
+                    CircleShape,
+                ),
         ) {
             Icon(
                 imageVector = Icons.Filled.Menu,
                 contentDescription = "Menu",
                 tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             )
         }
 
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Text(
                 text = "Current Location",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(2.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
             ) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = "Location",
                     tint = TealCyan,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = city ?: "Discovering...",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onBackground,
                 )
             }
         }
@@ -207,68 +205,69 @@ fun TravoroTopBar(
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .border(2.dp, TealCyan, CircleShape),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
-
             AsyncImage(
                 model = session.getProfileImage(),
                 contentDescription = "Profile Picture",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
-
         }
     }
 }
 
-
 @Composable
-fun HomeBottomBar(
-    navController: NavHostController
-) {
+fun HomeBottomBar(navController: NavHostController) {
     val items = listOf(
         HomeBottomNavigation.Home,
         HomeBottomNavigation.TravelAI,
         HomeBottomNavigation.Messages,
-        HomeBottomNavigation.MyTrips
+        HomeBottomNavigation.MyTrips,
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                horizontal = 24.dp, vertical = 24.dp
+                horizontal = 24.dp,
+                vertical = 24.dp,
             )
-            .height(72.dp)
+            .height(72.dp),
     ) {
-
         GlassBackground(modifier = Modifier.matchParentSize())
 
         Row(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             items.forEach { item ->
                 val selected = currentDestination?.route?.contains(
-                    item.destination::class.simpleName ?: ""
+                    item.destination::class.simpleName ?: "",
                 ) == true
 
                 val iconScale by animateFloatAsState(
-                    targetValue = if (selected) 1.15f else 1.0f, animationSpec = spring(
+                    targetValue = if (selected) 1.15f else 1.0f,
+                    animationSpec = spring(
                         dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessLow
-                    ), label = "scale_anim"
+                        stiffness = Spring.StiffnessLow,
+                    ),
+                    label = "scale_anim",
                 )
 
                 val contentColor by animateColorAsState(
-                    targetValue = if (selected) TealCyan else MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                        alpha = 0.6f
-                    ), label = "color_anim"
+                    targetValue = if (selected) {
+                        TealCyan
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                            alpha = 0.6f,
+                        )
+                    },
+                    label = "color_anim",
                 )
 
                 Column(
@@ -287,9 +286,10 @@ fun HomeBottomBar(
                                         restoreState = true
                                     }
                                 }
-                            }),
+                            },
+                        ),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    verticalArrangement = Arrangement.Center,
                 ) {
                     Icon(
                         imageVector = item.icon,
@@ -297,7 +297,7 @@ fun HomeBottomBar(
                         modifier = Modifier
                             .size(24.dp)
                             .scale(iconScale),
-                        tint = contentColor
+                        tint = contentColor,
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -306,7 +306,7 @@ fun HomeBottomBar(
                         text = item.title,
                         style = MaterialTheme.typography.labelSmall,
                         color = contentColor,
-                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
                     )
                 }
             }
@@ -315,10 +315,7 @@ fun HomeBottomBar(
 }
 
 @Composable
-fun GlassBackground(
-    modifier: Modifier = Modifier
-) {
-
+fun GlassBackground(modifier: Modifier = Modifier) {
     val surfaceColor = MaterialTheme.colorScheme.surface
     val glassColor = surfaceColor.copy(alpha = 0.85f)
     val borderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
@@ -328,7 +325,9 @@ fun GlassBackground(
             .clip(RoundedCornerShape(28.dp))
             .background(glassColor)
             .border(
-                width = 1.dp, color = borderColor, shape = RoundedCornerShape(28.dp)
-            )
+                width = 1.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(28.dp),
+            ),
     )
 }

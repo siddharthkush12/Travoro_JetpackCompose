@@ -1,7 +1,5 @@
 package com.travoro.app.ui.splash
 
-
-import com.travoro.app.R
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -20,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.*
+import com.travoro.app.R
 import com.travoro.app.di.Session
 import com.travoro.app.rootNavigation.Home
 import com.travoro.app.rootNavigation.Onboarding
@@ -30,9 +29,9 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
-    session: Session, onNavigate: (Any) -> Unit
+    session: Session,
+    onNavigate: (Any) -> Unit,
 ) {
-
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.travoro))
     val zoomScale = remember { Animatable(1f) }
     val fadeAlpha = remember { Animatable(1f) }
@@ -40,9 +39,9 @@ fun SplashScreen(
     val middleColor = TealCyan.copy(0.5f)
     val bottomColor = MidnightBlue
 
-
     val progress by animateLottieCompositionAsState(
-        composition = composition, iterations = 1
+        composition = composition,
+        iterations = 1,
     )
 
     LaunchedEffect(progress) {
@@ -52,12 +51,13 @@ fun SplashScreen(
             val zoomJob = async {
                 zoomScale.animateTo(
                     targetValue = 15f,
-                    animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
+                    animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
                 )
             }
             val fadeJob = async {
                 fadeAlpha.animateTo(
-                    targetValue = 0f, animationSpec = tween(durationMillis = 500)
+                    targetValue = 0f,
+                    animationSpec = tween(durationMillis = 500),
                 )
             }
 
@@ -69,17 +69,16 @@ fun SplashScreen(
         }
     }
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(topColor, middleColor, bottomColor)
-                )
-            ), contentAlignment = Alignment.Center
+                    colors = listOf(topColor, middleColor, bottomColor),
+                ),
+            ),
+        contentAlignment = Alignment.Center,
     ) {
-
         LottieAnimation(
             composition = composition,
             progress = { progress },
@@ -90,7 +89,8 @@ fun SplashScreen(
                     scaleX = zoomScale.value
                     scaleY = zoomScale.value
                     alpha = fadeAlpha.value
-                })
+                },
+        )
 
         Column(
             modifier = Modifier
@@ -98,10 +98,13 @@ fun SplashScreen(
                 .padding(bottom = 64.dp)
                 .graphicsLayer {
                     alpha = fadeAlpha.value
-                }, horizontalAlignment = Alignment.CenterHorizontally
+                },
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CircularProgressIndicator(
-                color = TealCyan, strokeWidth = 2.5.dp, modifier = Modifier.size(24.dp)
+                color = TealCyan,
+                strokeWidth = 2.5.dp,
+                modifier = Modifier.size(24.dp),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -111,7 +114,7 @@ fun SplashScreen(
                 color = Color.White.copy(alpha = 0.85f),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                letterSpacing = 1.sp
+                letterSpacing = 1.sp,
             )
         }
     }
